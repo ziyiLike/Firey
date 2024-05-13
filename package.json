@@ -1,0 +1,29 @@
+{
+  "name": "firefly",
+  "version": "0.0.1",
+  "description": "A cross-era framework for Node Js Web services",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "nodemon test/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ziyiLike/Firefly.git"
+  },
+  "author": "ziyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ziyiLike/Firefly/issues"
+  },
+  "homepage": "https://github.com/ziyiLike/Firefly#readme",
+  "dependencies": {
+    "pm2": "^5.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.11",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
