@@ -4,7 +4,11 @@
   "description": "A cross-era framework for Node Js Web services",
   "main": "src/index.ts",
   "scripts": {
-    "test": "nodemon test/index.ts",
+    "dev": "nodemon test/app.ts",
+    "test": "pm2 start test/config/pm2.config.ts --only development",
+    "prod": "pm2 start test/config/pm2.config.ts --only production",
+    "stop": "pm2 stop test/config/pm2.config.ts",
+    "list": "pm2 list",
     "build": "tsc -p tsconfig.json"
   },
   "repository": {
@@ -18,6 +22,8 @@
   },
   "homepage": "https://github.com/ziyiLike/Firefly#readme",
   "dependencies": {
+    "bun": "^1.1.8",
+    "log4js": "^6.9.1",
     "pm2": "^5.3.1"
   },
   "devDependencies": {

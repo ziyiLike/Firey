@@ -47,3 +47,5 @@ export default class StatusCode {
         throw new Error('StatusCode is a static class and cannot be instantiated');
     }
 }
+
+export {StatusCode}

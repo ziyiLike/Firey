@@ -1,19 +1,49 @@
-declare module "FY" {
-    import http from "http";
+import http from "http";
 
-    class IMainInterface {
+export namespace IFY {
 
-        private routes: {
-            [method: string]: { [path: string]: (req: http.IncomingMessage, res: http.ServerResponse) => void }
-        };
-        private middlewares: Array<(req: http.IncomingMessage, res: http.ServerResponse, next: () => void) => void>;
+    interface Routers {
+        [method: string]: { [path: string]: Handler }
+    }
 
-        use(middleware: (req: http.IncomingMessage, res: http.ServerResponse, next: () => void) => void): void;
+    type Middleware = (req: http.IncomingMessage, res: http.ServerResponse, dispatch: () => any) => void
 
-        route(method: string, path: string, handler: (req: http.IncomingMessage, res: http.ServerResponse) => void): void;
+    type BaseHandler = (req: http.IncomingMessage, res: http.ServerResponse) => any
 
-        createServer(port: number, hostname: string): void;
+    type Handler = (request: Request) => any
 
-        private requestListener(req: http.IncomingMessage, res: http.ServerResponse): void;
+    type Response = {
+        data: any;
+        code: number;
+        contentType: string;
+    } & Record<string, any>
+
+    type BaseRequest<T> = http.IncomingMessage & T
+
+    type Request = BaseRequest<{
+        query: Record<string, any>,
+    }>
+
+    type BaseRouter<T> = {
+        method: string;
+        path: string;
+        handler: Handler;
+    } & T
+
+    type Router = BaseRouter<{
+        middleware?: Middleware;
+    }>
+
+    type MiddlewareProps = {
+        before: BaseHandler;
+        after: BaseHandler;
+    }
+
+    interface ErrorState extends Partial<{
+        request: http.IncomingMessage;
+        response: http.ServerResponse;
+        contentType: string;
+    }> {
     }
 }
+

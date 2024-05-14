@@ -1,14 +1,16 @@
 // Exceptions
-import StatusCode from '../status'
+import StatusCode from '../httpEnums/statusCode'
+import {IFY} from '../types'
 
 export class BaseError extends Error {
+    state: IFY.ErrorState = {}
     name: string = 'BaseError'
     code: number | undefined
 
-    constructor(message?: string, code?: number) {
+    constructor(message?: string, code?: number, state?: IFY.ErrorState) {
         super(message);
-        this.message = message || this.name || 'unknown'
         code && (this.code = code)
+        state && (this.state = state)
     }
 }
 
