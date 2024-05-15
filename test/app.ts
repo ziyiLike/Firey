@@ -9,6 +9,7 @@ const app = new Firefly();
 
 app.use(useMiddleware({
     before: () => {
+        throw new NotFoundError('Not Found')
     },
     after: (req, res) => console.log(res)
 }));

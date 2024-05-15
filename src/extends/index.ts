@@ -11,9 +11,9 @@ export default class FireflyExtends {
     protected routes?: any
     protected middlewares?: any = [];
 
-    response(res: http.ServerResponse, statusCode: number, data: any, contentType: string) {
-        res.writeHead(statusCode, {'Content-Type': contentType});
-        res.end(JSON.stringify(data));
+    response(res: http.ServerResponse, response: IFY.Response) {
+        res.writeHead(response.code, {'Content-Type': response.contentType});
+        res.end(JSON.stringify(response.data));
     }
 
     protected dispatch(req: http.IncomingMessage, res: http.ServerResponse) {
@@ -35,11 +35,11 @@ export default class FireflyExtends {
         let middlewareIndex = 0;
 
         if (!method || !path) {
-            throw '{【Firefly Error】 method or path is empty'
+            throw new TypeError('{【Firefly Error】 method or path is empty')
         }
 
         if (!Object.keys(this.routes).length) {
-            throw '【Firefly Error】 routes is empty'
+            throw new TypeError('【Firefly Error】 routes is empty')
         }
 
         const _dispatch = () => {
@@ -52,7 +52,7 @@ export default class FireflyExtends {
                 const handler = this.routes[method][path];
                 if (handler) {
                     response = handler(request);
-                    this.response(res, response.code, response.data, response.contentType);
+                    this.response(res, response);
                 } else {
                     throw new NotFoundError()
                 }
@@ -60,21 +60,27 @@ export default class FireflyExtends {
             return response;
         };
 
-        return this._exceptionDispatchHandler(res, _dispatch)
+        return _dispatch
     }
 
 
     protected _exceptionDispatchHandler(res: http.ServerResponse, dispatch: () => void) {
-        return () => {
-            try {
-                return dispatch();
-            } catch (err) {
-                if (err instanceof BaseError) {
-                    this.response(res, err.code!, {message: err.message || err.name}, ContentType.APPLICATION_JSON);
-                } else {
-                    console.error('Server Error:', err);
-                    this.response(res, StatusCode.INTERNAL_SERVER_ERROR, 'Internal Server Error', ContentType.TEXT_PLAIN);
-                }
+        try {
+            return dispatch();
+        } catch (err) {
+            if (err instanceof BaseError && err.message !== 'No response') {
+                this.response(res, {
+                    code: err.code!,
+                    data: {message: err.message || err.name},
+                    contentType: ContentType.APPLICATION_JSON
+                });
+            } else {
+                console.error('Server Error:', err);
+                this.response(res, {
+                    code: StatusCode.INTERNAL_SERVER_ERROR,
+                    data: 'Internal Server Error',
+                    contentType: ContentType.TEXT_PLAIN
+                });
             }
         }
     }

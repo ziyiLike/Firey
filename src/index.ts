@@ -1,6 +1,7 @@
 import http from "http";
 import FireflyExtends from "./extends";
 import {IFY} from './types'
+import {InternalServerError} from "./exceptions";
 
 export default class Firefly extends FireflyExtends {
     protected routes: IFY.Routers = {};
@@ -29,11 +30,19 @@ export default class Firefly extends FireflyExtends {
         server.listen(port, hostname, () => console.log(`Server listening on http://${hostname}:${port}`));
     }
 
-    private requestListener(request: http.IncomingMessage, response: http.ServerResponse) {
+    private requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
 
         // Dispatch
-        const _dispatch = this.dispatch(request, response)
-        this.middlewares.length ? this.middlewares[0](request, response, _dispatch) : _dispatch()
+        const _dispatch = this.dispatch(req, res)
+
+        // Execute Middleware and Dispatch with Exception Handler
+        this._exceptionDispatchHandler(res, () => {
+            this.middlewares.length ? this.middlewares[0](req, res, _dispatch) : _dispatch()
+
+            if (!res.writableEnded) {
+                throw new InternalServerError('No response')
+            }
+        })
     }
 }
 
