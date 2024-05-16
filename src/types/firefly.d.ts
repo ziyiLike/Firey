@@ -2,11 +2,21 @@ import http from "http";
 
 export namespace IFY {
 
+    interface FireflyProps {
+        rootPath: string;
+    }
+
+    type State = Partial<{
+        response: Response;
+    }>
+
+    type setState = (state: State) => void
+
     interface Routers {
         [method: string]: { [path: string]: Handler }
     }
 
-    type Middleware = (req: http.IncomingMessage, res: http.ServerResponse, dispatch: () => any) => void
+    type Middleware = (req: http.IncomingMessage, res: http.ServerResponse, setState: setState, dispatch: () => any) => void
 
     type BaseHandler = (req: http.IncomingMessage, res: http.ServerResponse) => any
 
@@ -33,6 +43,11 @@ export namespace IFY {
     type Router = BaseRouter<{
         middleware?: Middleware;
     }>
+
+    type IncludeRouter = {
+        path: string;
+        appPath: string;
+    }
 
     type MiddlewareProps = {
         before: BaseHandler;

@@ -1,5 +1,5 @@
 ###
-GET http://localhost:8088/?name=1&sex=2
+GET http://localhost:8088/test-api/test2?name=1&sex=2
 Content-Type: application/json
 
 ###

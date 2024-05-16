@@ -4,12 +4,22 @@ import {BaseError, NotFoundError} from "../exceptions";
 import StatusCode from "../httpEnums/statusCode";
 import log4js from '../log'
 import {IFY} from "../types";
+import {Effects} from "../exceptions/effects";
 
 const logger = log4js.getLogger();
 
-export default class FireflyExtends {
+export default class FireflyExtends extends Effects {
     protected routes?: any
     protected middlewares?: any = [];
+    protected state: IFY.State = {}
+
+    protected setState(state: IFY.State) {
+        this.state = {...this.state, ...state}
+    }
+
+    protected initRequest(req: http.IncomingMessage) {
+        this.state.response && delete this.state.response
+    }
 
     response(res: http.ServerResponse, response: IFY.Response) {
         res.writeHead(response.code, {'Content-Type': response.contentType});
@@ -22,7 +32,7 @@ export default class FireflyExtends {
         const path = fullPath?.split('?')[0];
 
         res.on("finish", () => {
-            logger.info(`${method} ${fullPath} ${res.statusCode}`);
+            logger.info(`- ${method} ${fullPath} ${res.statusCode}`);
         })
 
         // 构建Request对象
@@ -44,15 +54,15 @@ export default class FireflyExtends {
 
         const _dispatch = () => {
             let response = {} as IFY.Response;
-
+            console.log(this.routes)
             middlewareIndex++;
             if (middlewareIndex < this.middlewares.length) {
-                this.middlewares[middlewareIndex](req, res, _dispatch);
+                this.middlewares[middlewareIndex](req, res, this.setState.bind(this), _dispatch);
             } else {
                 const handler = this.routes[method][path];
                 if (handler) {
                     response = handler(request);
-                    this.response(res, response);
+                    response && this.setState({response})
                 } else {
                     throw new NotFoundError()
                 }
@@ -69,17 +79,21 @@ export default class FireflyExtends {
             return dispatch();
         } catch (err) {
             if (err instanceof BaseError && err.message !== 'No response') {
-                this.response(res, {
-                    code: err.code!,
-                    data: {message: err.message || err.name},
-                    contentType: ContentType.APPLICATION_JSON
-                });
+                this.setState({
+                    response: {
+                        code: err.code!,
+                        data: {message: err.message || err.name},
+                        contentType: ContentType.APPLICATION_JSON
+                    }
+                })
             } else {
                 console.error('Server Error:', err);
-                this.response(res, {
-                    code: StatusCode.INTERNAL_SERVER_ERROR,
-                    data: 'Internal Server Error',
-                    contentType: ContentType.TEXT_PLAIN
+                this.setState({
+                    response: {
+                        code: StatusCode.INTERNAL_SERVER_ERROR,
+                        data: 'Internal Server Error',
+                        contentType: ContentType.TEXT_PLAIN
+                    }
                 });
             }
         }

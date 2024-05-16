@@ -1,28 +1,22 @@
 import Firefly from "../src";
 import {useMiddleware} from "../src/hooks/useMiddleware";
-import {useResponse} from "../src/hooks/useResponse";
-import {useRouter} from "../src/hooks/useRouter";
-import {NotFoundError} from "../src/exceptions";
+import {useIncludeRouter} from "../src/hooks/useIncludeRouter";
 
-const app = new Firefly();
+const app = new Firefly({
+    rootPath: __dirname
+});
 
 
 app.use(useMiddleware({
     before: () => {
-        throw new NotFoundError('Not Found')
     },
-    after: (req, res) => console.log(res)
+    after: (req, res) => {
+    }
 }));
 
-const testGetApi = useRouter({
-    method: 'get',
-    path: '/',
-    handler: (request) => {
-        console.log(request.query)
-        return useResponse({message: 'hello world'})
-    }
-})
 
-app.router(testGetApi)
+app.router([
+    useIncludeRouter('/test-api', 'apps.test'),
+])
 
 app.createServer(8088, 'localhost', true);
