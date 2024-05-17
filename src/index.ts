@@ -3,6 +3,7 @@ import FireflyExtends from "./extends";
 import {IFY} from './types'
 import {InternalServerError} from "./exceptions";
 import path from "path";
+import {usePackageHooks} from "./utils";
 
 export default class Firefly extends FireflyExtends {
     protected routes: IFY.Routers = {};
@@ -38,26 +39,44 @@ export default class Firefly extends FireflyExtends {
     }
 
     createServer(port: number, hostname: string = 'localhost', debug: boolean = false) {
-        console.log(`Firefly Debug: ${debug}`)
+        usePackageHooks('tagLog', `Debug : ${debug}`)
 
         // Exception Handler
         this._exceptionHandler()
 
+        // Init Validation
+        this._initValidation()
+
         const server = http.createServer(this.requestListener.bind(this))
 
-        server.listen(port, hostname, () => console.log(`Server listening at http://${hostname}:${port}`));
+        server.listen(port, hostname, () => {
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                usePackageHooks('tagLog', `Localhost server running on http://${hostname}:${port}`)
+            } else if (hostname === '0.0.0.0') {
+                // Get Network Interface
+                const interfaces = require('os').networkInterfaces()
+                usePackageHooks('tagLog', 'Network server running on: ')
+                Object.keys(interfaces).forEach(key => {
+                    const ip = interfaces[key].find((item: any) => item.family === 'IPv4')
+                    ip && usePackageHooks('tagLog', `🚀 http://${ip.address}:${port}`)
+                })
+            } else {
+                usePackageHooks('tagLog', `Server running on http://${hostname}:${port}`)
+            }
+            usePackageHooks('tagLog', `(Press Ctrl+C to stop server)`)
+        });
     }
 
     private requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
-        // initRequest
-        this.initRequest(req)
+        // Init Request
+        const request = this.initRequest(req)
 
         // Dispatch
-        const _dispatch = this.dispatch(req, res)
+        const _dispatch = this.dispatch(request, res)
 
         // Execute Middleware and Dispatch with Exception Handler
-        this._exceptionDispatchHandler(res, () => {
-            this.middlewares.length ? this.middlewares[0](req, res, this.setState.bind(this), _dispatch) : _dispatch()
+        this._exceptionDispatchHandler(() => {
+            this.middlewares.length ? this.middlewares[0](request, res, this.setState.bind(this), _dispatch) : _dispatch()
 
             if (!this.state.response) {
                 throw new InternalServerError('No response')

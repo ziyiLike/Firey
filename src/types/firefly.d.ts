@@ -16,9 +16,9 @@ export namespace IFY {
         [method: string]: { [path: string]: Handler }
     }
 
-    type Middleware = (req: http.IncomingMessage, res: http.ServerResponse, setState: setState, dispatch: () => any) => void
+    type Middleware = (req: Request, res: http.ServerResponse, setState: setState, dispatch: () => any) => void
 
-    type BaseHandler = (req: http.IncomingMessage, res: http.ServerResponse) => any
+    type BaseHandler = (req: Request, res: http.ServerResponse) => any
 
     type Handler = (request: Request) => any
 
@@ -31,6 +31,8 @@ export namespace IFY {
     type BaseRequest<T> = http.IncomingMessage & T
 
     type Request = BaseRequest<{
+        fullPath: string;
+        path: string;
         query: Record<string, any>,
     }>
 

@@ -5,6 +5,7 @@ import StatusCode from "../httpEnums/statusCode";
 import log4js from '../log'
 import {IFY} from "../types";
 import {Effects} from "../exceptions/effects";
+import {usePackageHooks} from "../utils";
 
 const logger = log4js.getLogger();
 
@@ -17,8 +18,21 @@ export default class FireflyExtends extends Effects {
         this.state = {...this.state, ...state}
     }
 
-    protected initRequest(req: http.IncomingMessage) {
+    protected initRequest(req: http.IncomingMessage): IFY.Request {
         this.state.response && delete this.state.response
+
+        const method = req.method?.toUpperCase();
+        const fullPath = req.url || '';
+        const path = fullPath?.split('?')[0];
+
+        // 构建Request对象
+        return Object.assign(req, {
+            method,
+            fullPath,
+            path,
+            query: usePackageHooks('splitQuery', fullPath),
+        })
+
     }
 
     response(res: http.ServerResponse, response: IFY.Response) {
@@ -26,40 +40,22 @@ export default class FireflyExtends extends Effects {
         res.end(JSON.stringify(response.data));
     }
 
-    protected dispatch(req: http.IncomingMessage, res: http.ServerResponse) {
-        const method = req.method?.toUpperCase();
-        const fullPath = req.url || '';
-        const path = fullPath?.split('?')[0];
-
+    protected dispatch(request: IFY.Request, res: http.ServerResponse) {
+        const {method, path, fullPath} = request;
         res.on("finish", () => {
             logger.info(`- ${method} ${fullPath} ${res.statusCode}`);
         })
 
-        // 构建Request对象
-        const request = {
-            ...req,
-            query: this.splitQuery(fullPath),
-        }
-
-        // 处理中间件
         let middlewareIndex = 0;
-
-        if (!method || !path) {
-            throw new TypeError('{【Firefly Error】 method or path is empty')
-        }
-
-        if (!Object.keys(this.routes).length) {
-            throw new TypeError('【Firefly Error】 routes is empty')
-        }
 
         const _dispatch = () => {
             let response = {} as IFY.Response;
-            console.log(this.routes)
+
             middlewareIndex++;
             if (middlewareIndex < this.middlewares.length) {
-                this.middlewares[middlewareIndex](req, res, this.setState.bind(this), _dispatch);
+                this.middlewares[middlewareIndex](request, res, this.setState.bind(this), _dispatch);
             } else {
-                const handler = this.routes[method][path];
+                const handler = this.routes[method!][path];
                 if (handler) {
                     response = handler(request);
                     response && this.setState({response})
@@ -73,8 +69,14 @@ export default class FireflyExtends extends Effects {
         return _dispatch
     }
 
+    protected _initValidation() {
+        if (!Object.keys(this.routes).length) {
+            throw new TypeError('routers is empty! Did you forget to install the router? please use `app.router()` to install it!')
+        }
+    }
 
-    protected _exceptionDispatchHandler(res: http.ServerResponse, dispatch: () => void) {
+
+    protected _exceptionDispatchHandler(dispatch: () => void) {
         try {
             return dispatch();
         } catch (err) {
@@ -101,21 +103,8 @@ export default class FireflyExtends extends Effects {
 
     protected _exceptionHandler() {
         process.on('uncaughtException', (err: Error) => {
-            console.log('Server Process Error:', err)
+            console.log('【Firefly Error】:', err)
         })
-    }
-
-    private splitQuery(path: string) {
-        const queryObj = {} as any;
-        const queryStr = path.split('?')[1];
-        if (queryStr) {
-            const queryArr = queryStr.split('&');
-            queryArr.forEach((item: string) => {
-                const [key, value] = item.split('=');
-                queryObj[key] = value;
-            })
-        }
-        return queryObj;
     }
 
 }
