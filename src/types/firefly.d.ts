@@ -2,6 +2,8 @@ import http from "http";
 
 export namespace IFY {
 
+    type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE"
+
     interface FireflyProps {
         rootPath: string;
     }
