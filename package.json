@@ -1,6 +1,6 @@
 {
   "name": "@firefly/core",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "description": "A cross-era framework for Node Js Web services",
   "main": "dist/src/index.js",
   "scripts": {
