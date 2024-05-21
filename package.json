@@ -1,16 +1,21 @@
 {
-  "name": "firefly",
+  "name": "@firefly/core",
   "version": "0.0.1",
   "description": "A cross-era framework for Node Js Web services",
-  "main": "src/index.ts",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "nodemon test/app.ts",
     "test": "pm2 start test/config/pm2.config.ts --only development",
     "prod": "pm2 start test/config/pm2.config.ts --only production",
     "stop": "pm2 stop test/config/pm2.config.ts",
     "list": "pm2 list",
-    "build": "tsc -p tsconfig.json"
+    "clean": "rm -rf dist",
+    "build": "tsc -p tsconfig.json",
+    "pub": "npm version prerelease && pnpm build && npm publish"
   },
+  "files": [
+    "dist/src/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ziyiLike/Firefly.git"
