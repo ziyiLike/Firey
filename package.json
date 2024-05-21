@@ -1,6 +1,6 @@
 {
-  "name": "@firefly-cross-service/core",
-  "version": "0.0.2-4",
+  "name": "@firefly/core",
+  "version": "0.0.2-3",
   "description": "A cross-era framework for Node Js Web services",
   "main": "dist/src/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "list": "pm2 list",
     "clean": "rm -rf dist",
     "build": "tsc -p tsconfig.json",
-    "pub": "npm version prerelease && pnpm build && npm publish"
+    "pub": "npm version prerelease && pnpm build && npm publish --access public"
   },
   "files": [
     "dist/src/*"
