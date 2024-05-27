@@ -1,5 +1,5 @@
 {
-  "name": "firyfly-js",
+  "name": "firefly-js",
   "version": "0.0.3-3",
   "description": "A cross-era framework for Node Js Web services",
   "main": "dist/src/index.js",
