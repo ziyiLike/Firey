@@ -1,5 +1,5 @@
-import Firefly from "../src";
-import {useMiddleware} from "../src/hooks/useMiddleware";
+import Firefly from "../dist/src";
+import {useMiddleware} from "../dist/src/hooks/useMiddleware";
 import {useIncludeRouter} from "../src/hooks/useIncludeRouter";
 import {useResponse} from "../src/hooks/useResponse";
 

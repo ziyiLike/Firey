@@ -1,11 +1,13 @@
 {
   "include": [
-    "**/*.ts"
+    "src/**/*.ts"
   ],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
     "rootDir": ".",
+    "declaration": true,
+    "sourceMap": true,
     "strict": true,
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
