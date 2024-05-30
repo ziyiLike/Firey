@@ -12,13 +12,15 @@ export namespace IFY {
         response: Response;
     }>
 
-    type setState = (state: State) => void
+    type SetState = (state: State) => void
+
+    type Use = (middleware: Middleware) => void
 
     interface Routers {
         [method: string]: { [path: string]: Handler }
     }
 
-    type Middleware = (req: Request, res: http.ServerResponse, setState: setState, dispatch: () => any) => void
+    type Middleware = (req: Request, res: http.ServerResponse, setState: SetState, dispatch: () => any) => void
 
     type BaseHandler = (req: Request, res: http.ServerResponse) => any
 
@@ -36,7 +38,13 @@ export namespace IFY {
         fullPath: string;
         path: string;
         query: Record<string, any>,
+        data: any;
+        body: RequestBody
     }>
+
+    type RequestBody = {
+        __chunksData: string;
+    }
 
     type BaseRouter<T> = {
         method: string;

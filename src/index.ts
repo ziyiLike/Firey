@@ -1,14 +1,11 @@
 import http from "http";
 import FireflyExtends from "./extends";
 import {IFY} from './types'
-import {InternalServerError} from "./exceptions";
+import {InternalServerError, ParseBodyError} from "./exceptions";
 import path from "path";
 import {usePackageHooks} from "./utils";
 
 export default class Firefly extends FireflyExtends {
-    protected routes: IFY.Routers = {};
-    protected middlewares: IFY.Middleware[] = [];
-    protected state: IFY.State = {};
     protected rootPath: string;
 
     constructor({rootPath}: IFY.FireflyProps) {
@@ -38,7 +35,7 @@ export default class Firefly extends FireflyExtends {
         }
     }
 
-    createServer(port: number, hostname: string = 'localhost', debug: boolean = false) {
+    run(port: number, hostname: string = 'localhost', debug: boolean = false) {
         usePackageHooks('tagLog', `Debug : ${debug}`)
 
         // Exception Handler
@@ -71,19 +68,24 @@ export default class Firefly extends FireflyExtends {
         // Init Request
         const request = this.initRequest(req)
 
-        // Dispatch
-        const _dispatch = this.dispatch(request, res)
+        // Install Setup Middleware
+        this.initSetupMiddleware(this.use.bind(this))
 
-        // Execute Middleware and Dispatch with Exception Handler
-        this._exceptionDispatchHandler(() => {
-            this.middlewares.length ? this.middlewares[0](request, res, this.setState.bind(this), _dispatch) : _dispatch()
+        // Request Data Chunks Handler
+        this._requestDataChunksHandler(req, request, () => {
+            const _dispatch = this.dispatch(request, res)
 
-            if (!this.state.response) {
-                throw new InternalServerError('No response')
-            }
+            // Execute Middleware and Dispatch with Exception Handler
+            this._exceptionDispatchHandler(() => {
+                this.middlewares.length ? this.middlewares[0](request, res, this.setState.bind(this), _dispatch) : _dispatch()
+
+                if (!this.state.response) {
+                    throw new InternalServerError('No response')
+                }
+            })
+
+            this.response(res, this.state.response!)
         })
-
-        this.response(res, this.state.response!)
     }
 }
 

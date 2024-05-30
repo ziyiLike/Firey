@@ -64,3 +64,7 @@ export class PermissionDeniedError extends BaseError {
     code = StatusCode.FORBIDDEN;
 }
 
+export class ParseBodyError extends BaseError {
+    name = 'ParseBodyError';
+    code = StatusCode.UNPROCESSABLE_ENTITY;
+}

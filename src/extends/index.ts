@@ -5,12 +5,13 @@ import StatusCode from "../httpEnums/statusCode";
 import log4js from '../log'
 import {IFY} from "../types";
 import {Effects} from "../exceptions/effects";
-import {usePackageHooks} from "../utils";
+import {parseBodyMiddleware} from "../middlewares/parseBodyMiddleware";
+import {parse} from "querystring";
 
 const logger = log4js.getLogger();
 
 export default class FireflyExtends extends Effects {
-    protected routes?: any
+    protected routes?: any = []
     protected middlewares?: any = [];
     protected state: IFY.State = {}
 
@@ -23,16 +24,24 @@ export default class FireflyExtends extends Effects {
 
         const method = req.method?.toUpperCase();
         const fullPath = req.url || '';
-        const path = fullPath?.split('?')[0];
+        const [path, queryString] = [fullPath?.split('?')[0], fullPath?.split('?')[1]];
 
         // 构建Request对象
         return Object.assign(req, {
             method,
             fullPath,
             path,
-            query: usePackageHooks('splitQuery', fullPath),
+            query: parse(queryString),
+            data: {},
+            body: {
+                __chunksData: ''
+            }
         })
 
+    }
+
+    protected initSetupMiddleware(use: IFY.Use) {
+        use(parseBodyMiddleware);
     }
 
     response(res: http.ServerResponse, response: IFY.Response) {
@@ -73,6 +82,17 @@ export default class FireflyExtends extends Effects {
         if (!Object.keys(this.routes).length) {
             throw new TypeError('routers is empty! Did you forget to install the router? please use `app.router()` to install it!')
         }
+    }
+
+    protected _requestDataChunksHandler(req: http.IncomingMessage, request: IFY.Request, handler: () => void) {
+        let __chunksData = '';
+        req.on('data', (chunk) => {
+            __chunksData += chunk.toString();
+        });
+        req.on('end', () => {
+            request.body.__chunksData = __chunksData
+            handler()
+        })
     }
 
 

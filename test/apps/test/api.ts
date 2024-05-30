@@ -12,3 +12,9 @@ export const testApi2 = (request: IFY.Request) => {
     console.log(request.query)
     return useResponse({message: 'test2'})
 }
+
+
+export const testPostApi = (request: IFY.Request) => {
+    console.log(request.data)
+    return useResponse({message: 'test3'})
+}

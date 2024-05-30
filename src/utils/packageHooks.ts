@@ -18,3 +18,7 @@ export const splitQuery = (path: string) => {
 export const tagLog = (message: string, tag: string = '【Firefly】') => {
     console.log(`${tag}   ${message}`);
 }
+
+export const isIn = (value: any, arr: any[]) => {
+    return arr.includes(value);
+}
