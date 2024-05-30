@@ -16,5 +16,8 @@ export const testApi2 = (request: IFY.Request) => {
 
 export const testPostApi = (request: IFY.Request) => {
     console.log(request.data)
+    console.log(request.data.file2.size)
+    console.log(request.data.file2.toBuffer())
+    request.data.file2.save('./test.xlsx')
     return useResponse({message: 'test3'})
 }

@@ -72,5 +72,11 @@ export namespace IFY {
         contentType: string;
     }> {
     }
+
+    interface File {
+        key: string;
+        name: string;
+        content: string | undefined;
+    }
 }
 

@@ -1,9 +1,9 @@
 import http from "http";
 import FireflyExtends from "./extends";
 import {IFY} from './types'
-import {InternalServerError, ParseBodyError} from "./exceptions";
+import {InternalServerError} from "./exceptions";
 import path from "path";
-import {usePackageHooks} from "./utils";
+import {useHooks} from "./utils";
 
 export default class Firefly extends FireflyExtends {
     protected rootPath: string;
@@ -36,7 +36,7 @@ export default class Firefly extends FireflyExtends {
     }
 
     run(port: number, hostname: string = 'localhost', debug: boolean = false) {
-        usePackageHooks('tagLog', `Debug : ${debug}`)
+        useHooks('tagLog', `Debug : ${debug}`)
 
         // Exception Handler
         this._exceptionHandler()
@@ -44,32 +44,32 @@ export default class Firefly extends FireflyExtends {
         // Init Validation
         this._initValidation()
 
+        // Install Setup Middleware
+        this.initSetupMiddleware(this.use.bind(this))
+
         const server = http.createServer(this.requestListener.bind(this))
 
         server.listen(port, hostname, () => {
             if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                usePackageHooks('tagLog', `Localhost server running on http://${hostname}:${port}`)
+                useHooks('tagLog', `Localhost server running on http://${hostname}:${port}`)
             } else if (hostname === '0.0.0.0') {
                 // Get Network Interface
                 const interfaces = require('os').networkInterfaces()
-                usePackageHooks('tagLog', 'Network server running on: ')
+                useHooks('tagLog', 'Network server running on: ')
                 Object.keys(interfaces).forEach(key => {
                     const ip = interfaces[key].find((item: any) => item.family === 'IPv4')
-                    ip && usePackageHooks('tagLog', `🚀 http://${ip.address}:${port}`)
+                    ip && useHooks('tagLog', `🚀 http://${ip.address}:${port}`)
                 })
             } else {
-                usePackageHooks('tagLog', `Server running on http://${hostname}:${port}`)
+                useHooks('tagLog', `Server running on http://${hostname}:${port}`)
             }
-            usePackageHooks('tagLog', `(Press Ctrl+C to stop server)`)
+            useHooks('tagLog', `(Press Ctrl+C to stop server)`)
         });
     }
 
     private requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
         // Init Request
         const request = this.initRequest(req)
-
-        // Install Setup Middleware
-        this.initSetupMiddleware(this.use.bind(this))
 
         // Request Data Chunks Handler
         this._requestDataChunksHandler(req, request, () => {

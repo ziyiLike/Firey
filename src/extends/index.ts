@@ -4,7 +4,7 @@ import {BaseError, NotFoundError} from "../exceptions";
 import StatusCode from "../httpEnums/statusCode";
 import log4js from '../log'
 import {IFY} from "../types";
-import {Effects} from "../exceptions/effects";
+import {Effects} from "./effects";
 import {parseBodyMiddleware} from "../middlewares/parseBodyMiddleware";
 import {parse} from "querystring";
 
@@ -85,12 +85,12 @@ export default class FireflyExtends extends Effects {
     }
 
     protected _requestDataChunksHandler(req: http.IncomingMessage, request: IFY.Request, handler: () => void) {
-        let __chunksData = '';
+        let __chunksData: any[] = [];
         req.on('data', (chunk) => {
-            __chunksData += chunk.toString();
+            __chunksData.push(chunk)
         });
         req.on('end', () => {
-            request.body.__chunksData = __chunksData
+            request.body.__chunksData = Buffer.concat(__chunksData).toString('binary')
             handler()
         })
     }
