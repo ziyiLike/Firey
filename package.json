@@ -22,8 +22,12 @@
       "require": "./dist/src/index.js",
       "types": "./dist/src/index.d.ts"
     },
-    "./*": "./dist/src/*",
-    "./utils/*": "./utils/*.js"
+    "./hooks": {
+      "import": "./dist/src/hooks/index.js",
+      "require": "./dist/src/hooks/index.js",
+      "types": "./dist/src/hooks/index.d.ts"
+    },
+    "./types": "./dist/src/types/index.d.ts"
   },
   "files": [
     "dist/src/*"

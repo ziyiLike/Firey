@@ -80,6 +80,9 @@ export default class FireflyExtends extends Effects {
 
     protected compilePath(method: IFY.HttpMethod, path: string) {
         let paramsList: any[] = [];
+        if (!this.routes[method]) {
+            this.routes[method] = {};
+        }
         const prePath = Object.keys(this.routes[method]).find((regexPath) => {
             const pattern = new RegExp(regexPath);
             if (pattern.test(path)) {

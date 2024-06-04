@@ -1,5 +1,5 @@
 import Firefly from "../src";
-import {useIncludeRouter} from "../src/hooks/useIncludeRouter";
+import {useIncludeRouter} from "../src/hooks";
 
 const app = new Firefly({
     rootPath: __dirname
