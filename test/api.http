@@ -4,6 +4,18 @@ Content-Type: application/json
 
 ###
 
+###
+GET http://localhost:8088/test-api/test/kate/user
+Content-Type: application/json
+
+###
+
+###
+GET http://localhost:8088/test-api/test/2/1/user
+Content-Type: application/json
+
+###
+
 
 ###
 GET http://localhost:8088/user

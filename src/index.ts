@@ -4,6 +4,7 @@ import {IFY} from './types'
 import {InternalServerError} from "./exceptions";
 import path from "path";
 import {useHooks} from "./utils";
+import {useStore} from "./hooks/useStore";
 
 export default class Firefly extends FireflyExtends {
     protected rootPath: string;
@@ -20,7 +21,8 @@ export default class Firefly extends FireflyExtends {
     router(router_: IFY.Router | IFY.IncludeRouter[]) {
         if (Array.isArray(router_)) {
             router_.forEach(parentRouter => {
-                const routers = require(path.join(this.rootPath, parentRouter.appPath.replace(/[.]/g, path.sep), 'router')).default
+                const _preImportRouters = require(path.join(this.rootPath, parentRouter.appPath.replace(/[.]/g, path.sep), 'router'))
+                const routers = _preImportRouters.default || _preImportRouters
                 routers.forEach((childRouter: IFY.Router) => {
                     childRouter.path = parentRouter.path + childRouter.path
                     this.router(childRouter)
@@ -29,9 +31,10 @@ export default class Firefly extends FireflyExtends {
         } else {
             const method = router_.method.toUpperCase()
             const {path, handler} = router_
+            const {convertedPath, params} = this.convertPathToRegex(path)
 
             if (!this.routes[method]) this.routes[method] = {};
-            this.routes[method][path] = handler
+            this.routes[method][convertedPath] = {handler, params}
         }
     }
 
@@ -67,24 +70,26 @@ export default class Firefly extends FireflyExtends {
         });
     }
 
-    private requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
+    private async requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
+        const state = useStore()
+
         // Init Request
         const request = this.initRequest(req)
 
         // Request Data Chunks Handler
-        this._requestDataChunksHandler(req, request, () => {
-            const _dispatch = this.dispatch(request, res)
+        this._requestDataChunksHandler(req, request, async () => {
+            const _dispatch = this.dispatch(request, res);
 
             // Execute Middleware and Dispatch with Exception Handler
-            this._exceptionDispatchHandler(() => {
-                this.middlewares.length ? this.middlewares[0](request, res, this.setState.bind(this), _dispatch) : _dispatch()
+            await this._exceptionDispatchHandler(async () => {
+                this.middlewares.length ? await this.middlewares[0](request, res, _dispatch) : await _dispatch();
 
-                if (!this.state.response) {
-                    throw new InternalServerError('No response')
+                if (!state.response) {
+                    throw new InternalServerError('No response');
                 }
-            })
+            });
 
-            this.response(res, this.state.response!)
+            this.response(res, state.response!);
         })
     }
 }

@@ -17,8 +17,8 @@ export const splitQuery = (path: string) => {
     return queryObj;
 }
 
-export const tagLog = (message: string, tag: string = '【Firefly】') => {
-    console.log(`${tag}   ${message}`);
+export const tagLog = (message: string, tag: string = '[Firefly]') => {
+    console.log(`${tag} ${message}`);
 }
 
 export const isIn = (value: any, arr: any[]) => {
@@ -44,6 +44,19 @@ export const parseFormData = (contentType: string, chunksData: string) => {
             result[key] = name ? new FileData({key, name, content}) : content
         }
     })
+
+    return result;
+}
+
+export const zip = (keys: string[], values: any[]): Record<string, any> => {
+    if (keys.length !== values.length) {
+        throw new Error("keys和values数组长度不一致，无法映射为对象");
+    }
+
+    const result: Record<string, any> = {};
+    for (let i = 0; i < keys.length; i++) {
+        result[keys[i]] = values[i];
+    }
 
     return result;
 }

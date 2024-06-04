@@ -3,25 +3,21 @@ import {ParseBodyError} from "../exceptions";
 import {useSetupMiddleware} from "../hooks/useSetupMiddleware";
 import {parse} from "querystring";
 
-export const parseBodyMiddleware = useSetupMiddleware((req, res, setState, dispatch) => {
-    if (useHooks("isIn", req.method, ['POST', 'PATCH', 'PUT', 'DELETE'])) {
+export const parseBodyMiddleware = useSetupMiddleware(async (request, _, dispatch) => {
+    if (useHooks("isIn", request.method, ['POST', 'PATCH', 'PUT', 'DELETE'])) {
         try {
-            console.log('content-type -->', req.headers["content-type"])
-            if (req.headers["content-type"] === "application/json") {
-                req.data = JSON.parse(req.body.__chunksData);
+            if (request.headers["content-type"] === "application/json") {
+                request.data = JSON.parse(request.body.__chunksData);
             }
-            if (req.headers["content-type"] === "application/x-www-form-urlencoded") {
-                req.data = parse(req.body.__chunksData);
+            if (request.headers["content-type"] === "application/x-www-form-urlencoded") {
+                request.data = parse(request.body.__chunksData);
             }
-            if (req.headers["content-type"]?.startsWith("multipart/form-data")) {
-                req.data = useHooks('parseFormData', req.headers["content-type"], req.body.__chunksData)
+            if (request.headers["content-type"]?.startsWith("multipart/form-data")) {
+                request.data = useHooks('parseFormData', request.headers["content-type"], request.body.__chunksData)
             }
-
         } catch (error) {
             throw new ParseBodyError()
         }
-        dispatch()
-    } else {
-        dispatch()
     }
+    await dispatch()
 })

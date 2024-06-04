@@ -2,7 +2,7 @@ import http from "http";
 
 export namespace IFY {
 
-    type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE"
+    type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
 
     interface FireflyProps {
         rootPath: string;
@@ -12,6 +12,18 @@ export namespace IFY {
         response: Response;
     }>
 
+    type ResponseStatus = 'Wait' | 'Release'
+
+    interface StoreDefinition<State, Actions> {
+        state: () => State;
+        getters?: { [key: string]: (state: State) => any };
+        actions?: {
+            [key in keyof Actions]: (context: {
+                state: State
+            }, ...args: Actions[key] extends ((...args: infer P) => any) ? P : never[]) => void
+        };
+    }
+
     type SetState = (state: State) => void
 
     type Use = (middleware: Middleware) => void
@@ -20,21 +32,21 @@ export namespace IFY {
         [method: string]: { [path: string]: Handler }
     }
 
-    type Middleware = (req: Request, res: http.ServerResponse, setState: SetState, dispatch: () => any) => void
+    type Middleware = (req: Request, res: http.ServerResponse, dispatch: () => any) => void
 
-    type BaseHandler = (req: Request, res: http.ServerResponse) => any
-
-    type Handler = (request: Request) => any
+    type Handler = (request: Request, ...args: any[]) => any
 
     type Response = {
         data: any;
         code: number;
         contentType: string;
+        __status?: ResponseStatus;
     } & Record<string, any>
 
     type BaseRequest<T> = http.IncomingMessage & T
 
     type Request = BaseRequest<{
+        method: HttpMethod;
         fullPath: string;
         path: string;
         query: Record<string, any>,
@@ -62,8 +74,8 @@ export namespace IFY {
     }
 
     type MiddlewareProps = {
-        before: BaseHandler;
-        after: BaseHandler;
+        before: (req: Request, res: http.ServerResponse) => any;
+        after: (req: Request, res: Response | undefined) => any;
     }
 
     interface ErrorState extends Partial<{

@@ -7,22 +7,20 @@ import {IFY} from "../types";
 import {Effects} from "./effects";
 import {parseBodyMiddleware} from "../middlewares/parseBodyMiddleware";
 import {parse} from "querystring";
+import {useStore} from "../hooks/useStore";
+import {useHooks} from "../utils";
 
 const logger = log4js.getLogger();
 
 export default class FireflyExtends extends Effects {
     protected routes?: any = []
     protected middlewares?: any = [];
-    protected state: IFY.State = {}
-
-    protected setState(state: IFY.State) {
-        this.state = {...this.state, ...state}
-    }
 
     protected initRequest(req: http.IncomingMessage): IFY.Request {
-        this.state.response && delete this.state.response
+        const state = useStore()
+        state.response && (state.response = undefined)
 
-        const method = req.method?.toUpperCase();
+        const method = req.method?.toUpperCase() as IFY.HttpMethod;
         const fullPath = req.url || '';
         const [path, queryString] = [fullPath?.split('?')[0], fullPath?.split('?')[1]];
 
@@ -49,6 +47,71 @@ export default class FireflyExtends extends Effects {
         res.end(JSON.stringify(response.data));
     }
 
+    protected convertPathToRegex(pathWithParams: string) {
+        const dynamicParamPattern = /<(\w+):([\w|,]+)(:\?)?>/g;
+        let convertedPath = pathWithParams;
+        let params: Record<string, any>[] = [];
+
+        convertedPath = convertedPath.replace(dynamicParamPattern, (match, paramName, paramTypes, optionalMarker) => {
+            const types = paramTypes.split('|');
+            params.push({paramName, types});
+            const typeRegexes = types.map((type: any) => {
+                switch (type) {
+                    case 'string':
+                        return '.*';
+                    case 'number':
+                        return '[0-9]+';
+                    case 'boolean':
+                        return 'true|false';
+                    default:
+                        throw new Error(`Your path:${pathWithParams} unsupported parameter type: ${type}`);
+                }
+            });
+
+            const combinedRegex = `(?:(${typeRegexes.join('|')}))`;
+
+            return optionalMarker === ':?' ? `[${combinedRegex}]+?` : `${combinedRegex}`;
+        });
+
+        convertedPath = `^${convertedPath}$`;
+
+        return {convertedPath, params};
+    }
+
+    protected compilePath(method: IFY.HttpMethod, path: string) {
+        let paramsList: any[] = [];
+        const prePath = Object.keys(this.routes[method]).find((regexPath) => {
+            const pattern = new RegExp(regexPath);
+            if (pattern.test(path)) {
+                path.match(pattern)?.forEach((match, index) => {
+                    if (index > 0) {
+                        paramsList.push(match);
+                    }
+                })
+                return true;
+            }
+        })
+
+        if (!prePath) {
+            throw new NotFoundError()
+        }
+        const {handler, params} = this.routes[method!][prePath];
+
+        // parse params only when params length is 1
+        params.forEach((param: { types: any[]; }, index: number) => {
+            if (param.types.length === 1) {
+                if (param.types[0] === 'number') {
+                    paramsList[index] = Number(paramsList[index])
+                }
+                if (param.types[0] === 'boolean') {
+                    paramsList[index] = paramsList[index] === 'true'
+                }
+            }
+        })
+        return {handler, params: paramsList}
+    }
+
+
     protected dispatch(request: IFY.Request, res: http.ServerResponse) {
         const {method, path, fullPath} = request;
         res.on("finish", () => {
@@ -57,20 +120,17 @@ export default class FireflyExtends extends Effects {
 
         let middlewareIndex = 0;
 
-        const _dispatch = () => {
+        const _dispatch = async () => {
+            const state = useStore()
             let response = {} as IFY.Response;
 
             middlewareIndex++;
             if (middlewareIndex < this.middlewares.length) {
-                this.middlewares[middlewareIndex](request, res, this.setState.bind(this), _dispatch);
+                await this.middlewares[middlewareIndex](request, res, _dispatch);
             } else {
-                const handler = this.routes[method!][path];
-                if (handler) {
-                    response = handler(request);
-                    response && this.setState({response})
-                } else {
-                    throw new NotFoundError()
-                }
+                const {handler, params} = this.compilePath(method, path);
+                response = await handler(request, ...params)
+                state.waitResponse = response;
             }
             return response;
         };
@@ -80,7 +140,7 @@ export default class FireflyExtends extends Effects {
 
     protected _initValidation() {
         if (!Object.keys(this.routes).length) {
-            throw new TypeError('routers is empty! Did you forget to install the router? please use `app.router()` to install it!')
+            throw new Error('routers is empty! Did you forget to install the router? please use `app.router()` to install it!')
         }
     }
 
@@ -96,27 +156,24 @@ export default class FireflyExtends extends Effects {
     }
 
 
-    protected _exceptionDispatchHandler(dispatch: () => void) {
+    protected async _exceptionDispatchHandler(dispatch: () => Promise<void>) {
         try {
-            return dispatch();
+            return await dispatch();
         } catch (err) {
+            const state = useStore()
             if (err instanceof BaseError && err.message !== 'No response') {
-                this.setState({
-                    response: {
-                        code: err.code!,
-                        data: {message: err.message || err.name},
-                        contentType: ContentType.APPLICATION_JSON
-                    }
-                })
+                state.releaseResponse = {
+                    code: err.code!,
+                    data: {message: err.message || err.name},
+                    contentType: ContentType.APPLICATION_JSON
+                }
             } else {
                 console.error('Server Error:', err);
-                this.setState({
-                    response: {
-                        code: StatusCode.INTERNAL_SERVER_ERROR,
-                        data: 'Internal Server Error',
-                        contentType: ContentType.TEXT_PLAIN
-                    }
-                });
+                state.releaseResponse = {
+                    code: StatusCode.INTERNAL_SERVER_ERROR,
+                    data: 'Internal Server Error',
+                    contentType: ContentType.TEXT_PLAIN
+                }
             }
         }
     }

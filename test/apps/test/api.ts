@@ -21,3 +21,19 @@ export const testPostApi = (request: IFY.Request) => {
     request.data.file2.save('./test.xlsx')
     return useResponse({message: 'test3'})
 }
+
+export const testRegexApi = (request: IFY.Request, name: string) => {
+    console.log(name)
+    return useResponse({message: 'test4'})
+}
+
+export const testRegexApi2 = async (request: IFY.Request, name: string, age: number) => {
+    console.log(name, age)
+    await sleep(3000)
+    return useResponse({message: 'test4'})
+}
+
+
+function sleep(ms: number | undefined) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
