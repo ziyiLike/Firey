@@ -183,7 +183,6 @@ export default class FireflyExtends extends Effects {
             console.log('【Firefly Error】:', err)
         })
     }
-
 }
 
 export {FireflyExtends}

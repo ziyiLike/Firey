@@ -16,6 +16,15 @@
     "build:linux": "pnpm clean:linux && tsx --noEmitOnError  && cp -r src/types dist/src/types",
     "pub": "npm version prerelease && pnpm build && npm publish --access public"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./*": "./dist/src/*",
+    "./utils/*": "./utils/*.js"
+  },
   "files": [
     "dist/src/*"
   ],
@@ -29,6 +38,10 @@
     "url": "https://github.com/ziyiLike/Firefly/issues"
   },
   "homepage": "https://github.com/ziyiLike/Firefly#readme",
+  "keywords": [
+    "firefly",
+    "koa"
+  ],
   "dependencies": {
     "bun": "^1.1.8",
     "log4js": "^6.9.1",
