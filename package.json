@@ -1,6 +1,6 @@
 {
   "name": "firey",
-  "version": "0.0.3-9",
+  "version": "0.0.3-10",
   "description": "A cross-era framework for Node Js Web services",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
