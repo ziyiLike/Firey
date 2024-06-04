@@ -27,6 +27,11 @@
       "require": "./dist/src/hooks/index.js",
       "types": "./dist/src/hooks/index.d.ts"
     },
+    "./exceptions": {
+      "import": "./dist/src/exceptions/index.js",
+      "require": "./dist/src/exceptions/index.js",
+      "types": "./dist/src/exceptions/index.d.ts"
+    },
     "./types": "./dist/src/types/index.d.ts"
   },
   "files": [
