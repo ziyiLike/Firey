@@ -5,6 +5,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
+    "moduleResolution": "nodeNext",
     "rootDir": ".",
     "declaration": true,
     "sourceMap": true,
