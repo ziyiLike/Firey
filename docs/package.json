@@ -1,0 +1,17 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
+  },
+  "devDependencies": {
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0",
+    "vitepress": "latest",
+    "vitepress-theme-demoblock": "^2.0.2",
+    "@types/node": "^20.14.1"
+  }
+}

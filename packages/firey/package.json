@@ -48,8 +48,7 @@
   ],
   "dependencies": {
     "bun": "^1.1.12",
-    "log4js": "^6.9.1",
-    "pm2": "^5.4.0"
+    "log4js": "^6.9.1"
   },
   "devDependencies": {
     "@types/node": "^20.14.1",

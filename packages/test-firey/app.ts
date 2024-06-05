@@ -1,9 +1,7 @@
-import Firefly from "firey";
+import Firefly from "../firey";
 import {useIncludeRouter} from "firey/hooks";
 
-const app = new Firefly({
-    rootPath: __dirname
-});
+const app = new Firefly();
 
 
 app.router([

@@ -9,9 +9,9 @@ import {useStore} from "./hooks/useStore";
 export default class Firefly extends FireflyExtends {
     protected rootPath: string;
 
-    constructor({rootPath}: IFY.FireflyProps) {
+    constructor(props: IFY.FireflyProps = {}) {
         super()
-        this.rootPath = rootPath
+        this.rootPath = props?.rootPath || ''
     }
 
     use(middleware: IFY.Middleware) {

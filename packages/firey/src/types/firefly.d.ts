@@ -4,8 +4,8 @@ export namespace IFY {
 
     type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
 
-    interface FireflyProps {
-        rootPath: string;
+    type FireflyProps = {
+        rootPath?: string;
     }
 
     type State = Partial<{

@@ -6,9 +6,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "dev": "pnpm -r --filter ./packages/firey dev",
-    "build": "pnpm -r --filter ./packages/firey build",
-    "pub": "pnpm -r --filter ./packages/firey pub"
+    "dev": "pnpm -r --filter=test-firey run dev",
+    "docs": "pnpm -r --filter=docs run docs:dev",
+    "build": "pnpm -r --filter=firey build",
+    "pub": "pnpm -r --filter=firey pub"
   },
   "repository": {
     "type": "git",
