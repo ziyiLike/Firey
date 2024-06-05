@@ -1,4 +1,4 @@
-import {useRouter} from "../../../src/hooks/useRouter";
+import {useRouter} from "firey/hooks";
 import * as api from './api'
 
 export default useRouter([

@@ -1,0 +1,60 @@
+{
+  "name": "firey",
+  "version": "0.0.3-11",
+  "description": "A cross-era framework for Node Js Web services",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "scripts": {
+    "clean": "rmdir /s /q dist",
+    "clean:linux": "rm -rf dist",
+    "build": "tsc --noEmitOnError && xcopy src\\types dist\\src\\types /E /I",
+    "build:linux": "pnpm clean:linux && tsx --noEmitOnError  && cp -r src/types dist/src/types",
+    "pub": "npm version prerelease && pnpm build && npm publish --access public"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/src/hooks/index.js",
+      "require": "./dist/src/hooks/index.js",
+      "types": "./dist/src/hooks/index.d.ts"
+    },
+    "./exceptions": {
+      "import": "./dist/src/exceptions/index.js",
+      "require": "./dist/src/exceptions/index.js",
+      "types": "./dist/src/exceptions/index.d.ts"
+    },
+    "./types": "./dist/src/types/index.d.ts"
+  },
+  "files": [
+    "dist/src/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ziyiLike/Firefly.git"
+  },
+  "author": "ziyi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ziyiLike/Firefly/issues"
+  },
+  "homepage": "https://github.com/ziyiLike/Firefly#readme",
+  "keywords": [
+    "firefly",
+    "koa"
+  ],
+  "dependencies": {
+    "bun": "^1.1.12",
+    "log4js": "^6.9.1",
+    "pm2": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.1",
+    "nodemon": "^3.1.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

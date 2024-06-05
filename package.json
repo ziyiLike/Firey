@@ -1,65 +1,23 @@
 {
-  "name": "firey",
-  "version": "0.0.3-11",
-  "description": "A cross-era framework for Node Js Web services",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "name": "firefly",
+  "version": "0.0.1",
+  "description": "",
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
-    "dev": "nodemon test/app.ts",
-    "test": "pm2 start test/config/pm2.config.ts --only development",
-    "prod": "pm2 start test/config/pm2.config.ts --only production",
-    "stop": "pm2 stop test/config/pm2.config.ts",
-    "list": "pm2 list",
-    "clean": "rmdir /s /q dist",
-    "clean:linux": "rm -rf dist",
-    "build": "pnpm clean && tsc --noEmitOnError && xcopy src\\types dist\\src\\types /E /I",
-    "build:linux": "pnpm clean:linux && tsx --noEmitOnError  && cp -r src/types dist/src/types",
-    "pub": "npm version prerelease && pnpm build && npm publish --access public"
+    "dev": "pnpm -r --filter ./packages/firey dev",
+    "build": "pnpm -r --filter ./packages/firey build",
+    "pub": "pnpm -r --filter ./packages/firey pub"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/src/index.js",
-      "require": "./dist/src/index.js",
-      "types": "./dist/src/index.d.ts"
-    },
-    "./hooks": {
-      "import": "./dist/src/hooks/index.js",
-      "require": "./dist/src/hooks/index.js",
-      "types": "./dist/src/hooks/index.d.ts"
-    },
-    "./exceptions": {
-      "import": "./dist/src/exceptions/index.js",
-      "require": "./dist/src/exceptions/index.js",
-      "types": "./dist/src/exceptions/index.d.ts"
-    },
-    "./types": "./dist/src/types/index.d.ts"
-  },
-  "files": [
-    "dist/src/*"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ziyiLike/Firefly.git"
   },
-  "author": "ziyi",
-  "license": "MIT",
+  "author": "",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/ziyiLike/Firefly/issues"
   },
-  "homepage": "https://github.com/ziyiLike/Firefly#readme",
-  "keywords": [
-    "firefly",
-    "koa"
-  ],
-  "dependencies": {
-    "bun": "^1.1.8",
-    "log4js": "^6.9.1",
-    "pm2": "^5.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.12.11",
-    "nodemon": "^3.1.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
-  }
+  "homepage": "https://github.com/ziyiLike/Firefly#readme"
 }

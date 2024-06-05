@@ -16,6 +16,11 @@ export default class FireflyExtends extends Effects {
     protected routes?: any = []
     protected middlewares?: any = [];
 
+    response(res: http.ServerResponse, response: IFY.Response) {
+        res.writeHead(response.code, {'Content-Type': response.contentType});
+        res.end(JSON.stringify(response.data));
+    }
+
     protected initRequest(req: http.IncomingMessage): IFY.Request {
         const state = useStore()
         state.response && (state.response = undefined)
@@ -40,11 +45,6 @@ export default class FireflyExtends extends Effects {
 
     protected initSetupMiddleware(use: IFY.Use) {
         use(parseBodyMiddleware);
-    }
-
-    response(res: http.ServerResponse, response: IFY.Response) {
-        res.writeHead(response.code, {'Content-Type': response.contentType});
-        res.end(JSON.stringify(response.data));
     }
 
     protected convertPathToRegex(pathWithParams: string) {

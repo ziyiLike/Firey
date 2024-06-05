@@ -1,6 +1,6 @@
-import {IFY} from "../../../src/types";
-import {NotFoundError} from "../../../src/exceptions";
-import {useResponse} from "../../../src/hooks/useResponse";
+import {IFY} from "firey/types";
+import {NotFoundError} from "firey/exceptions";
+import {useResponse} from "firey/hooks";
 
 
 export const testApi = (request: IFY.Request) => {
