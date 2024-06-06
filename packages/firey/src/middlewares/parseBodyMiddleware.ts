@@ -1,6 +1,6 @@
 import {useHooks} from "../utils";
 import {ParseBodyError} from "../exceptions";
-import {useSetupMiddleware} from "../hooks/useSetupMiddleware";
+import {useSetupMiddleware} from "../hooks";
 import {parse} from "querystring";
 
 export const parseBodyMiddleware = useSetupMiddleware(async (request, _, dispatch) => {

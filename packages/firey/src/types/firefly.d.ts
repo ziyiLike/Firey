@@ -1,12 +1,22 @@
 import http from "http";
+import {Appender, Configuration} from "log4js";
 
 export namespace IFY {
 
+    type Config = {
+        logger?: ConfigLogger
+    }
+
+    interface ConfigLogger {
+        config?: Configuration
+        level?: string;
+        appenders?: { [name: string]: Appender },
+        categories?: { [name: string]: { appenders: string[], level: string } }
+    }
+
     type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
 
-    type FireflyProps = {
-        rootPath?: string;
-    }
+    type FireflyProps = any[]
 
     type State = Partial<{
         response: Response;

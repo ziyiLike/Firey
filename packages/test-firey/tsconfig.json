@@ -3,21 +3,23 @@
     "./**/*.ts"
   ],
   "compilerOptions": {
+    "rootDir": "D:/Dev/Firefly/packages",
     "target": "esnext",
     "module": "nodeNext",
     "moduleResolution": "nodeNext",
-    "rootDir": ".",
     "declaration": true,
     "sourceMap": true,
     "strict": true,
     "outDir": "dist",
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS"
+      "module": "CommonJS",
+      "rootDir": "D:/Dev/Firefly/packages"
     }
   }
 }

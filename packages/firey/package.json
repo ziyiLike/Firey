@@ -27,7 +27,17 @@
       "require": "./dist/src/exceptions/index.js",
       "types": "./dist/src/exceptions/index.d.ts"
     },
-    "./types": "./dist/src/types/index.d.ts"
+    "./enums/*": {
+      "import": "./dist/src/httpEnums/*.js",
+      "require": "./dist/src/httpEnums/*.js",
+      "types": "./dist/src/httpEnums/*.d.ts"
+    },
+    "./types": "./dist/src/types/index.d.ts",
+    "./test": "./src/index.ts",
+    "./hooks-test": "./src/hooks/index.ts",
+    "./exceptions-test": "./src/exceptions/index.ts",
+    "./enums-test/*": "./src/httpEnums/*.ts",
+    "./types-test": "./src/types/index.d.ts"
   },
   "files": [
     "dist/src/*"

@@ -1,10 +1,12 @@
-import {IFY} from "firey/types";
-import {NotFoundError} from "firey/exceptions";
-import {useResponse} from "firey/hooks";
+import {IFY} from "firey/types-test";
+import {NotFoundError} from "firey/exceptions-test";
+import {useResponse, useLogger} from "firey/hooks-test";
 
+const logging = useLogger()
 
 export const testApi = (request: IFY.Request) => {
     console.log(request.query)
+    logging.info('test')
     throw new NotFoundError()
 }
 

@@ -1,24 +1,49 @@
 import http from "http";
 import {ContentType} from "../httpEnums/contentType";
-import {BaseError, NotFoundError} from "../exceptions";
+import {BaseError, InternalServerError, NotFoundError, ResponseError} from "../exceptions";
 import StatusCode from "../httpEnums/statusCode";
-import log4js from '../log'
+import log4js from "log4js";
 import {IFY} from "../types";
 import {Effects} from "./effects";
 import {parseBodyMiddleware} from "../middlewares/parseBodyMiddleware";
 import {parse} from "querystring";
-import {useStore} from "../hooks/useStore";
-import {useHooks} from "../utils";
-
-const logger = log4js.getLogger();
+import {useStore} from "../hooks";
 
 export default class FireflyExtends extends Effects {
+    protected rootPath: string = '';
     protected routes?: any = []
     protected middlewares?: any = [];
+    protected logger: log4js.Logger = log4js.getLogger()
 
-    response(res: http.ServerResponse, response: IFY.Response) {
-        res.writeHead(response.code, {'Content-Type': response.contentType});
-        res.end(JSON.stringify(response.data));
+    response(res: http.ServerResponse) {
+        const response = useStore().response;
+        res.writeHead(response!.code, {'Content-Type': response!.contentType});
+        res.end(response!.contentType === ContentType.APPLICATION_JSON ? JSON.stringify(response!.data) : response!.data);
+    }
+
+    protected parseResponse() {
+        const response = useStore().response;
+
+        if (!response) {
+            throw new InternalServerError('No response');
+        }
+
+        if (response?.code || response?.contentType || !response?.data) {
+            const tipsText = !response?.code ? 'status code' : !response?.contentType ? 'content type' : 'data';
+            throw new ResponseError(`Unable to find ${tipsText} in the response! Have you missed setting` +
+                'the status code? Please use `useResponse()` to rectify this issue.')
+        }
+
+        if (response.contentType === ContentType.APPLICATION_JSON) {
+            if (typeof response.data !== 'object') {
+                throw new ResponseError('Json Response data must be an object')
+            }
+        } else {
+            if (typeof response.data !== 'string') {
+                throw new ResponseError('Response data must be a string')
+            }
+        }
+
     }
 
     protected initRequest(req: http.IncomingMessage): IFY.Request {
@@ -114,11 +139,11 @@ export default class FireflyExtends extends Effects {
         return {handler, params: paramsList}
     }
 
-
     protected dispatch(request: IFY.Request, res: http.ServerResponse) {
         const {method, path, fullPath} = request;
+        // 获取ip
         res.on("finish", () => {
-            logger.info(`- ${method} ${fullPath} ${res.statusCode}`);
+            this.logger.info(`${request.socket.remoteAddress} ${method} ${fullPath} ${res.statusCode}`);
         })
 
         let middlewareIndex = 0;
@@ -133,7 +158,7 @@ export default class FireflyExtends extends Effects {
             } else {
                 const {handler, params} = this.compilePath(method, path);
                 response = await handler(request, ...params)
-                state.waitResponse = response;
+                response && (state.waitResponse = response);
             }
             return response;
         };
@@ -143,7 +168,7 @@ export default class FireflyExtends extends Effects {
 
     protected _initValidation() {
         if (!Object.keys(this.routes).length) {
-            throw new Error('routers is empty! Did you forget to install the router? please use `app.router()` to install it!')
+            throw new Error('The router collection is empty! Have you forgotten to install the routers? Please use `app.router()` to initialize them.')
         }
     }
 
@@ -158,20 +183,22 @@ export default class FireflyExtends extends Effects {
         })
     }
 
-
     protected async _exceptionDispatchHandler(dispatch: () => Promise<void>) {
         try {
             return await dispatch();
         } catch (err) {
             const state = useStore()
             if (err instanceof BaseError && err.message !== 'No response') {
+                if (err.code === StatusCode.INTERNAL_SERVER_ERROR) {
+                    this.logger.error(err)
+                }
                 state.releaseResponse = {
                     code: err.code!,
                     data: {message: err.message || err.name},
                     contentType: ContentType.APPLICATION_JSON
                 }
             } else {
-                console.error('Server Error:', err);
+                this.logger.error(err)
                 state.releaseResponse = {
                     code: StatusCode.INTERNAL_SERVER_ERROR,
                     data: 'Internal Server Error',
@@ -183,7 +210,7 @@ export default class FireflyExtends extends Effects {
 
     protected _exceptionHandler() {
         process.on('uncaughtException', (err: Error) => {
-            console.log('【Firefly Error】:', err)
+            this.logger.error(err)
         })
     }
 }

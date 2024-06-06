@@ -1,17 +1,18 @@
 import http from "http";
 import FireflyExtends from "./extends";
 import {IFY} from './types'
-import {InternalServerError} from "./exceptions";
 import path from "path";
 import {useHooks} from "./utils";
-import {useStore} from "./hooks/useStore";
+import {useLogger, useStore} from "./hooks";
 
 export default class Firefly extends FireflyExtends {
-    protected rootPath: string;
 
-    constructor(props: IFY.FireflyProps = {}) {
+    constructor(rootPath?: string) {
         super()
-        this.rootPath = props?.rootPath || ''
+        this.rootPath = rootPath || ''
+        process.env.FIREY_ROOT_PATH = rootPath
+
+        this.logger = useLogger()
     }
 
     use(middleware: IFY.Middleware) {
@@ -20,6 +21,10 @@ export default class Firefly extends FireflyExtends {
 
     router(router_: IFY.Router | IFY.IncludeRouter[]) {
         if (Array.isArray(router_)) {
+            if (!this.rootPath) {
+                throw Error('rootPath is empty! Do you forget to set rootPath? Please use \`' +
+                    'const app = new Firefly(__dirname)` instead of `const app = new Firefly()` !')
+            }
             router_.forEach(parentRouter => {
                 const _preImportRouters = require(path.join(this.rootPath, parentRouter.appPath.replace(/[.]/g, path.sep), 'router'))
                 const routers = _preImportRouters.default || _preImportRouters
@@ -84,14 +89,22 @@ export default class Firefly extends FireflyExtends {
             await this._exceptionDispatchHandler(async () => {
                 this.middlewares.length ? await this.middlewares[0](request, res, _dispatch) : await _dispatch();
 
-                if (!state.response) {
-                    throw new InternalServerError('No response');
-                }
+                this.parseResponse();
             });
 
-            this.response(res, state.response!);
+            this.response(res);
         })
     }
 }
 
-module.exports = Firefly
+// TODO: Router Decorator
+export function router(target: Firefly, path: string, method: IFY.HttpMethod) {
+    return (target_: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+        const router: IFY.Router = {
+            path,
+            method,
+            handler: descriptor.value
+        }
+        Reflect.apply(target.router, target, [router])
+    }
+}

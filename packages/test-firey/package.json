@@ -9,6 +9,7 @@
     "test": "pm2 start config/pm2.config.ts --only development",
     "prod": "pm2 start config/pm2.config.ts --only production",
     "stop": "pm2 stop config/pm2.config.ts",
+    "build": "tsc",
     "list": "pm2 list"
   },
   "dependencies": {
