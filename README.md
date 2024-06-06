@@ -21,7 +21,7 @@ import Firefly from "firey";
 import {useIncludeRouter} from "firey/hooks";
 
 
-const app = new Firefly({rootPath: __dirname});
+const app = new Firefly(__dirname);
 
 app.router([useIncludeRouter('/test-api', 'apps.test')]);
 
