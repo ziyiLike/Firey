@@ -44,16 +44,16 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ziyiLike/Firefly.git"
+    "url": "git+https://github.com/ziyiLike/Firey.git"
   },
   "author": "ziyi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ziyiLike/Firefly/issues"
+    "url": "https://github.com/ziyiLike/Firey/issues"
   },
-  "homepage": "https://github.com/ziyiLike/Firefly#readme",
+  "homepage": "https://github.com/ziyiLike/Firey#readme",
   "keywords": [
-    "firefly",
+    "firey",
     "koa"
   ],
   "dependencies": {

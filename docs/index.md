@@ -12,7 +12,7 @@ layout: home
 #      link: /document/Guide/Quick Start
 #    - theme: alt
 #      text: View on GitHub
-#      link: https://github.com/ziyiLike/Firefly
+#      link: https://github.com/ziyiLike/Firey
 ---
 
 <Index />

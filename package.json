@@ -1,5 +1,5 @@
 {
-  "name": "firefly",
+  "name": "firey-workspace",
   "version": "0.0.1",
   "description": "",
   "directories": {
@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ziyiLike/Firefly.git"
+    "url": "git+https://github.com/ziyiLike/Firey.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ziyiLike/Firefly/issues"
+    "url": "https://github.com/ziyiLike/Firey/issues"
   },
-  "homepage": "https://github.com/ziyiLike/Firefly#readme"
+  "homepage": "https://github.com/ziyiLike/Firey#readme"
 }

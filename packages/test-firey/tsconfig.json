@@ -3,7 +3,7 @@
     "./**/*.ts"
   ],
   "compilerOptions": {
-    "rootDir": "D:/Dev/Firefly/packages",
+    "rootDir": ".",
     "target": "esnext",
     "module": "nodeNext",
     "moduleResolution": "nodeNext",
@@ -18,8 +18,7 @@
   },
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS",
-      "rootDir": "D:/Dev/Firefly/packages"
+      "module": "CommonJS"
     }
   }
 }
