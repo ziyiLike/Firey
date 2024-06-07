@@ -7,7 +7,7 @@ module.exports = {
     apps: [
         {
             name: "development",
-            script: "./test/app.js",
+            script: "bun app.ts",
             args: "one two",
             instances: 1,
             cron_restart: "0 03 * * *",
@@ -26,7 +26,7 @@ module.exports = {
         },
         {
             name: "production",
-            script: "./test/app.js",
+            script: "bun ./dist/app.js",
             args: "",
             instances: 2,
             autorestart: true,

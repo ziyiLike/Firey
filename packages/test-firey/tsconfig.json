@@ -3,22 +3,22 @@
     "./**/*.ts"
   ],
   "compilerOptions": {
-    "rootDir": ".",
-    "target": "esnext",
-    "module": "nodeNext",
-    "moduleResolution": "nodeNext",
-    "declaration": true,
-    "sourceMap": true,
-    "strict": true,
+    "types": [
+      "bun-types"
+    ],
+    "lib": [
+      "esnext"
+    ],
     "outDir": "dist",
+    "rootDir": ".",
+    "module": "nodenext",
+    "target": "esnext",
+    "moduleResolution": "nodenext",
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   }
 }

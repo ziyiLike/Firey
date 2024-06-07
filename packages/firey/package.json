@@ -7,9 +7,9 @@
   "scripts": {
     "clean": "rmdir /s /q dist",
     "clean:linux": "rm -rf dist",
-    "build": "tsc --noEmitOnError && xcopy src\\types dist\\src\\types /E /I",
-    "build:linux": "pnpm clean:linux && tsx --noEmitOnError  && cp -r src/types dist/src/types",
-    "pub": "npm version prerelease && pnpm build && npm publish --access public"
+    "build:win": "tsc --noEmitOnError && xcopy src\\types dist\\src\\types /E /I",
+    "build:linux": "tsx --noEmitOnError  && cp -r src/types dist/src/types",
+    "pub": "npm version prerelease && npm run build && npm publish --access public"
   },
   "exports": {
     ".": {

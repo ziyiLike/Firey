@@ -5,12 +5,10 @@
   "directories": {
     "doc": "docs"
   },
-  "scripts": {
-    "dev": "pnpm -r --filter=test-firey run dev",
-    "docs": "pnpm -r --filter=docs run docs:dev",
-    "build": "pnpm -r --filter=firey build",
-    "pub": "pnpm -r --filter=firey pub"
-  },
+  "workspaces": [
+    "packages/*",
+    "docs"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ziyiLike/Firey.git"
@@ -20,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/ziyiLike/Firey/issues"
   },
-  "homepage": "https://github.com/ziyiLike/Firey#readme"
+  "homepage": "https://github.com/ziyiLike/Firey#readme",
+  "devDependencies": {
+    "bun-types": "^1.1.13-canary.20240606T140614"
+  }
 }

@@ -4,8 +4,19 @@ A cross-era framework for Node Js Web services
 
 ## Installation
 
+#### Bun
 ```bash
-pnpm install firey --save
+win:
+powershell -c "irm bun.sh/install.ps1 | iex"
+
+linux:
+curl -fsSL https://bun.sh/install | bash
+```
+
+#### Firey
+
+```bash
+bun add firey --save
 ```
 
 ## Quick Start
