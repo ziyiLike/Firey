@@ -1,16 +1,16 @@
 import http from "http";
-import FireflyExtends from "./extends";
+import FireyExtends from "./extends";
 import {IFY} from './types'
 import path from "path";
 import {useHooks} from "./utils";
-import {useLogger, useStore} from "./hooks";
+import {useLogger, useRuntimeEnv} from "./hooks";
 
-export default class Firefly extends FireflyExtends {
+export default class Firey extends FireyExtends {
 
     constructor(rootPath?: string) {
         super()
         this.rootPath = rootPath || ''
-        process.env.FIREY_ROOT_PATH = rootPath
+        useRuntimeEnv('FIREY_ROOT_PATH', rootPath)
 
         this.logger = useLogger()
     }
@@ -23,7 +23,7 @@ export default class Firefly extends FireflyExtends {
         if (Array.isArray(router_)) {
             if (!this.rootPath) {
                 throw Error('rootPath is empty! Do you forget to set rootPath? Please use \`' +
-                    'const app = new Firefly(__dirname)` instead of `const app = new Firefly()` !')
+                    'const app = new Firey(__dirname)` instead of `const app = new Firey()` !')
             }
             router_.forEach(parentRouter => {
                 const _preImportRouters = require(path.join(this.rootPath, parentRouter.appPath.replace(/[.]/g, path.sep), 'router'))
@@ -34,17 +34,24 @@ export default class Firefly extends FireflyExtends {
                 })
             })
         } else {
-            const method = router_.method.toUpperCase()
-            const {path, handler} = router_
+            const {method, path, handler} = router_
             const {convertedPath, params} = this.convertPathToRegex(path)
 
-            if (!this.routes[method]) this.routes[method] = {};
-            this.routes[method][convertedPath] = {handler, params}
+            const __registerRouter = (m: string) => {
+                const Im = m.toUpperCase()
+                if (!this.routes[Im]) this.routes[Im] = {};
+                this.routes[Im][convertedPath] = {handler, params}
+            }
+
+            Array.isArray(method) ? method.forEach(m => __registerRouter(m)) : __registerRouter(method)
         }
     }
 
     run(port: number, hostname: string = 'localhost', debug: boolean = false) {
         useHooks('tagLog', `Debug : ${debug}`)
+        useRuntimeEnv('FIREY_HOSTNAME', hostname)
+        useRuntimeEnv('FIREY_DEBUG', debug)
+        useRuntimeEnv('FIREY_PORT', port)
 
         // Exception Handler
         this._exceptionHandler()
@@ -76,8 +83,6 @@ export default class Firefly extends FireflyExtends {
     }
 
     private async requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
-        const state = useStore()
-
         // Init Request
         const request = this.initRequest(req)
 
@@ -98,7 +103,7 @@ export default class Firefly extends FireflyExtends {
 }
 
 // TODO: Router Decorator
-export function router(target: Firefly, path: string, method: IFY.HttpMethod) {
+export function router(target: Firey, path: string, method: IFY.HttpMethod) {
     return (target_: any, propertyKey: string, descriptor: PropertyDescriptor) => {
         const router: IFY.Router = {
             path,

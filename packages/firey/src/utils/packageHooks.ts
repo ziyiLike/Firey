@@ -4,20 +4,7 @@ export const isPrototype = (childInstance: any, parentClass: any) => {
     return childInstance instanceof parentClass;
 }
 
-export const splitQuery = (path: string) => {
-    const queryObj = {} as any;
-    const queryStr = path.split('?')[1];
-    if (queryStr) {
-        const queryArr = queryStr.split('&');
-        queryArr.forEach((item: string) => {
-            const [key, value] = item.split('=');
-            queryObj[key] = value;
-        })
-    }
-    return queryObj;
-}
-
-export const tagLog = (message: string, tag: string = '[Firefly]') => {
+export const tagLog = (message: string, tag: string = '[Firey]') => {
     console.log(`${tag} ${message}`);
 }
 
@@ -50,7 +37,7 @@ export const parseFormData = (contentType: string, chunksData: string) => {
 
 export const zip = (keys: string[], values: any[]): Record<string, any> => {
     if (keys.length !== values.length) {
-        throw new Error("keys和values数组长度不一致，无法映射为对象");
+        throw new Error("keys and values must have the same length");
     }
 
     const result: Record<string, any> = {};

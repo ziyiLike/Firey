@@ -1,5 +1,5 @@
 import http from "http";
-import {ContentType} from "../httpEnums/contentType";
+import ContentType from "../httpEnums/contentType";
 import {BaseError, InternalServerError, NotFoundError, ResponseError} from "../exceptions";
 import StatusCode from "../httpEnums/statusCode";
 import log4js from "log4js";
@@ -9,7 +9,7 @@ import {parseBodyMiddleware} from "../middlewares/parseBodyMiddleware";
 import {parse} from "querystring";
 import {useStore} from "../hooks";
 
-export default class FireflyExtends extends Effects {
+export default class FireyExtends extends Effects {
     protected rootPath: string = '';
     protected routes?: any = []
     protected middlewares?: any = [];
@@ -28,22 +28,11 @@ export default class FireflyExtends extends Effects {
             throw new InternalServerError('No response');
         }
 
-        if (response?.code || response?.contentType || !response?.data) {
+        if (!response?.code || !response?.contentType || !response?.data) {
             const tipsText = !response?.code ? 'status code' : !response?.contentType ? 'content type' : 'data';
             throw new ResponseError(`Unable to find ${tipsText} in the response! Have you missed setting` +
                 'the status code? Please use `useResponse()` to rectify this issue.')
         }
-
-        if (response.contentType === ContentType.APPLICATION_JSON) {
-            if (typeof response.data !== 'object') {
-                throw new ResponseError('Json Response data must be an object')
-            }
-        } else {
-            if (typeof response.data !== 'string') {
-                throw new ResponseError('Response data must be a string')
-            }
-        }
-
     }
 
     protected initRequest(req: http.IncomingMessage): IFY.Request {
@@ -215,4 +204,4 @@ export default class FireflyExtends extends Effects {
     }
 }
 
-export {FireflyExtends}
+export {FireyExtends}

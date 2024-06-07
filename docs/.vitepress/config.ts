@@ -17,13 +17,13 @@ export default defineConfig({
     themeConfig: {
         logo: '',
         siteTitle: 'Firey',
-        socialLinks: [{icon: 'github', link: 'https://github.com/ziyiLike/Firefly'}],
+        socialLinks: [{icon: 'github', link: 'https://github.com/ziyiLike/Firey'}],
         nav: NavList,
         sidebar: {
             '/document/': SidebarComponent
         },
         editLink: {
-            pattern: 'https://github.com/ziyiLike/Firefly/docs/:path',
+            pattern: 'https://github.com/ziyiLike/Firey/docs/:path',
             text: 'Edit this page on GitHub'
         },
     },

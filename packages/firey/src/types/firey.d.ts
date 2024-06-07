@@ -7,16 +7,22 @@ export namespace IFY {
         logger?: ConfigLogger
     }
 
+    interface RuntimeEnv {
+        FIREY_NODE_ENV: string
+        FIREY_PORT: number
+        FIREY_HOSTNAME: string
+        FIREY_DEBUG: boolean
+        FIREY_ROOT_PATH: string
+    }
+
     interface ConfigLogger {
         config?: Configuration
-        level?: string;
-        appenders?: { [name: string]: Appender },
+        level?: string
+        appenders?: { [name: string]: Appender }
         categories?: { [name: string]: { appenders: string[], level: string } }
     }
 
     type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
-
-    type FireflyProps = any[]
 
     type State = Partial<{
         response: Response;
@@ -47,58 +53,58 @@ export namespace IFY {
     type Handler = (request: Request, ...args: any[]) => any
 
     type Response = {
-        data: any;
-        code: number;
-        contentType: string;
-        __status?: ResponseStatus;
+        data: any
+        code: number
+        contentType: string
+        __status?: ResponseStatus
     } & Record<string, any>
 
     type BaseRequest<T> = http.IncomingMessage & T
 
     type Request = BaseRequest<{
-        method: HttpMethod;
-        fullPath: string;
-        path: string;
-        query: Record<string, any>,
-        data: any;
+        method: HttpMethod
+        fullPath: string
+        path: string
+        query: Record<string, any>
+        data: any
         body: RequestBody
     }>
 
     type RequestBody = {
-        __chunksData: string;
+        __chunksData: string
     }
 
     type BaseRouter<T> = {
-        method: string;
-        path: string;
-        handler: Handler;
+        method: HttpMethod | HttpMethod[]
+        path: string
+        handler: Handler
     } & T
 
     type Router = BaseRouter<{
-        middleware?: Middleware;
+        middleware?: Middleware
     }>
 
     type IncludeRouter = {
-        path: string;
-        appPath: string;
+        path: string
+        appPath: string
     }
 
     type MiddlewareProps = {
-        before: (req: Request, res: http.ServerResponse) => any;
-        after: (req: Request, res: Response | undefined) => any;
+        before: (req: Request, res: http.ServerResponse) => any
+        after: (req: Request, res: Response | undefined) => any
     }
 
     interface ErrorState extends Partial<{
-        request: http.IncomingMessage;
-        response: http.ServerResponse;
-        contentType: string;
+        request: http.IncomingMessage
+        response: http.ServerResponse
+        contentType: string
     }> {
     }
 
     interface File {
-        key: string;
-        name: string;
-        content: string | undefined;
+        key: string
+        name: string
+        content: string | undefined
     }
 }
 

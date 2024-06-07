@@ -14,8 +14,8 @@ export class BaseError extends Error {
     }
 }
 
-export class FireflyError extends BaseError {
-    name = 'FireflyError'
+export class FireyError extends BaseError {
+    name = 'FireyError'
 }
 
 export class RequestError extends BaseError {
