@@ -1,4 +1,4 @@
-# Firefly
+# Firey
 
 A cross-era framework for Node Js Web services
 
@@ -10,18 +10,18 @@ pnpm install firey --save
 
 ## Quick Start
 
-Within the context of Firefly, the prescribed routing conventions entail that by declaring the app directory path in the
-entry file, Firefly will proactively seek out the router.ts file situated within this specified directory and
+Within the context of Firey, the prescribed routing conventions entail that by declaring the app directory path in the
+entry file, Firey will proactively seek out the router.ts file situated within this specified directory and
 subsequently integrate it into the routing framework automatically.
 
 - app.ts
 
 ```ts
-import Firefly from "firey";
+import Firey from "firey";
 import {useIncludeRouter} from "firey/hooks";
 
 
-const app = new Firefly(__dirname);
+const app = new Firey(__dirname);
 
 app.router([useIncludeRouter('/test-api', 'apps.test')]);
 
