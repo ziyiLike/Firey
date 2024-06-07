@@ -1,5 +1,5 @@
 import Firey, {router} from "firey/test";
-import {useIncludeRouter, useHtmlResponse, useTextResponse} from "firey/hooks-test";
+import {useIncludeRouter, useHtmlResponse, useTextResponse, useJsonResponse, useResponse} from "firey/hooks-test";
 import {IFY} from "firey/types-test";
 
 export const app = new Firey(__dirname);
@@ -12,17 +12,17 @@ app.router({
     method: ['GET', 'POST'],
     path: '/',
     handler: (request) => {
-        return useTextResponse('123')
+        return useResponse('test')
     }
 })
 
 class Test {
 
     @router(app, '/<id:number>', 'GET')
-    async testApi(request: IFY.Request, id: number) {
+    async testApi(_: IFY.Request, id: number) {
         console.log(id)
-        return useHtmlResponse('<span style="color: red">Hello Firey!</span>')
+        return useJsonResponse('123')
     }
 }
 
-app.run(8088, '0.0.0.0', true);
+app.run()

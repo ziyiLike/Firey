@@ -10,6 +10,8 @@ import {parse} from "querystring";
 import {useStore} from "../hooks";
 
 export default class FireyExtends extends Effects {
+    protected initTime: number = Date.now();
+    protected debug: boolean = true;
     protected rootPath: string = '';
     protected routes?: any = []
     protected middlewares?: any = [];
@@ -35,13 +37,18 @@ export default class FireyExtends extends Effects {
         }
     }
 
-    protected initRequest(req: http.IncomingMessage): IFY.Request {
+    protected initRequest(req: http.IncomingMessage, res: http.ServerResponse): IFY.Request {
+        const __startTime = Date.now()
         const state = useStore()
         state.response && (state.response = undefined)
 
         const method = req.method?.toUpperCase() as IFY.HttpMethod;
         const fullPath = req.url || '';
         const [path, queryString] = [fullPath?.split('?')[0], fullPath?.split('?')[1]];
+
+        res.on("finish", () => {
+            this.logger.info(`${req.socket.remoteAddress || 'UnknownIP'} ${method} ${fullPath} ${res.statusCode} ${Date.now() - __startTime}ms`);
+        })
 
         // 构建Request对象
         return Object.assign(req, {
@@ -52,7 +59,8 @@ export default class FireyExtends extends Effects {
             data: {},
             body: {
                 __chunksData: ''
-            }
+            },
+            __startTime
         })
 
     }
@@ -129,11 +137,7 @@ export default class FireyExtends extends Effects {
     }
 
     protected dispatch(request: IFY.Request, res: http.ServerResponse) {
-        const {method, path, fullPath} = request;
-        // 获取ip
-        res.on("finish", () => {
-            this.logger.info(`${request.socket.remoteAddress} ${method} ${fullPath} ${res.statusCode}`);
-        })
+        const {method, path} = request;
 
         let middlewareIndex = 0;
 
@@ -183,7 +187,7 @@ export default class FireyExtends extends Effects {
                 }
                 state.releaseResponse = {
                     code: err.code!,
-                    data: {message: err.message || err.name},
+                    data: {message: this.debug ? err.message || err.name : err.name},
                     contentType: ContentType.APPLICATION_JSON
                 }
             } else {

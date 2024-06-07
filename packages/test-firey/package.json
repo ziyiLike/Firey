@@ -5,12 +5,12 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "dev": "bun --hot app.ts",
+    "dev": "NODE_ENV=development && bun --watch app.ts",
     "preview": "bun ./dist/app.js",
-    "test": "pm2 start config/pm2.config.ts --only development",
+    "test": "NODE_ENV=development && bun test",
     "prod": "pm2 start config/pm2.config.ts --only production",
     "stop": "pm2 stop config/pm2.config.ts",
-    "build": "tsc",
+    "build": "NODE_ENV=production && tsc",
     "list": "pm2 list"
   },
   "dependencies": {

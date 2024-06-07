@@ -47,50 +47,59 @@ export default class Firey extends FireyExtends {
         }
     }
 
-    run(port: number, hostname: string = 'localhost', debug: boolean = false) {
-        useHooks('tagLog', `Debug : ${debug}`)
-        useRuntimeEnv('FIREY_HOSTNAME', hostname)
-        useRuntimeEnv('FIREY_DEBUG', debug)
-        useRuntimeEnv('FIREY_PORT', port)
+    run(port: number = 3000, hostname: string = 'localhost', debug: boolean = true): any {
 
-        // Exception Handler
+        const setIfUndefined = <T extends keyof IFY.RuntimeEnv>(key: T, value: IFY.RuntimeEnv[T]): any => {
+            useRuntimeEnv(key) === undefined && useRuntimeEnv(key, value)
+            return useRuntimeEnv(key)
+        }
+
+        const h = setIfUndefined('FIREY_HOSTNAME', hostname);
+        const p = setIfUndefined('FIREY_PORT', port);
+        const d = setIfUndefined('FIREY_DEBUG', debug);
+
+        this.debug = d === 'true'
+        useHooks('tagLog', `Debug : ${d}`)
+
         this._exceptionHandler()
 
-        // Init Validation
         this._initValidation()
 
-        // Install Setup Middleware
         this.initSetupMiddleware(this.use.bind(this))
 
-        const server = http.createServer(this.requestListener.bind(this))
+        return new Promise((resolve: any, _) => {
+            const server = http.createServer(this.requestListener.bind(this))
+            server.listen(p, h, () => {
+                if (h === 'localhost' || h === '127.0.0.1') {
+                    useHooks('tagLog', `🚀 http://${h}:${p}`)
+                } else if (h === '0.0.0.0') {
+                    const interfaces = require('os').networkInterfaces()
+                    useHooks('tagLog', 'Network server running on: ')
+                    Object.keys(interfaces).forEach(key => {
+                        const ip = interfaces[key].find((item: any) => item.family === 'IPv4')
+                        ip && useHooks('tagLog', `🚀 http://${ip.address}:${p}`)
+                    })
+                } else {
+                    useHooks('tagLog', `Server running on http://${h}:${p}`)
+                }
+                useHooks('tagLog', `(Press Ctrl+C to stop server)`)
+                useHooks('tagLog', `Startup time: ${Date.now() - this.initTime}ms`)
+                resolve()
+            });
+        })
+    }
 
-        server.listen(port, hostname, () => {
-            if (hostname === 'localhost' || hostname === '127.0.0.1') {
-                useHooks('tagLog', `Localhost server running on http://${hostname}:${port}`)
-            } else if (hostname === '0.0.0.0') {
-                // Get Network Interface
-                const interfaces = require('os').networkInterfaces()
-                useHooks('tagLog', 'Network server running on: ')
-                Object.keys(interfaces).forEach(key => {
-                    const ip = interfaces[key].find((item: any) => item.family === 'IPv4')
-                    ip && useHooks('tagLog', `🚀 http://${ip.address}:${port}`)
-                })
-            } else {
-                useHooks('tagLog', `Server running on http://${hostname}:${port}`)
-            }
-            useHooks('tagLog', `(Press Ctrl+C to stop server)`)
-        });
+    exit() {
+        process.exit(0)
     }
 
     private async requestListener(req: http.IncomingMessage, res: http.ServerResponse) {
-        // Init Request
-        const request = this.initRequest(req)
 
-        // Request Data Chunks Handler
+        const request = this.initRequest(req, res)
+
         this._requestDataChunksHandler(req, request, async () => {
             const _dispatch = this.dispatch(request, res);
 
-            // Execute Middleware and Dispatch with Exception Handler
             await this._exceptionDispatchHandler(async () => {
                 this.middlewares.length ? await this.middlewares[0](request, res, _dispatch) : await _dispatch();
 

@@ -68,6 +68,7 @@ export namespace IFY {
         query: Record<string, any>
         data: any
         body: RequestBody
+        __startTime: number
     }>
 
     type RequestBody = {
