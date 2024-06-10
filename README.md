@@ -11,6 +11,9 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 
 linux:
 curl -fsSL https://bun.sh/install | bash
+
+node:
+npm install -g bun
 ```
 
 #### Firey
