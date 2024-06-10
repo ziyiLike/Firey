@@ -4,8 +4,8 @@
   ],
   "compilerOptions": {
     "target": "esnext",
-    "module": "nodeNext",
-    "moduleResolution": "nodeNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "rootDir": ".",
     "declaration": true,
     "sourceMap": true,
@@ -14,10 +14,5 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
   }
 }

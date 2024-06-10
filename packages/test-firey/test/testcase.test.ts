@@ -1,19 +1,19 @@
 import {app} from '../app'
-import {beforeEach, afterEach} from "bun:test";
-import {expect, it} from "bun:test";
-
-beforeEach(() => {
-    app.run()
-});
+import {describe, expect, it} from "bun:test";
 
 
-it('test-api', async () => {
-    const response = await app.get('/')
 
-    expect(await response.json()).toBe('test')
-});
+describe('FireyTestCase', () => {
+    it('test-api', async () => {
+        const response = await app.get('/')
 
+        expect(await response.json()).toBe('test')
+    });
 
-afterEach(() => {
-    app.exit()
-});
+    it('test-api1', async () => {
+        const response = await app.get('/')
+
+        expect(await response.json()).toBe('test')
+    });
+
+})

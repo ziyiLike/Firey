@@ -1,7 +1,3 @@
 import {IFY} from "../types";
 
-export const useRouter = (router: {
-    method: IFY.HttpMethod,
-    path: string,
-    handler: IFY.Handler
-}[]) => (router)
+export const useRouter = (router: IFY.Router[]) => router

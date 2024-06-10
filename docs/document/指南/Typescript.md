@@ -1,13 +1,34 @@
 # Typescript
 
+详情请清参考 [Bun TypeScript](https://bun.sh/docs/typescript)
+
 ## 配置
 
-在使用`Typescript`开发时，需要注意配置一下内容到你的`tsconfig.json`文件中：
+在使用`Typescript`开发时，可以参考以下`tsconfig.json`相关配置：
 
 ```json
 {
-  "module": "nodeNext",
-  "moduleResolution": "nodeNext"
+  "include": [
+    "./**/*.ts"
+  ],
+  "compilerOptions": {
+    "types": [
+      "bun-types"
+    ],
+    "lib": [
+      "esnext"
+    ],
+    "outDir": "dist",
+    "rootDir": ".",
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
 }
 ```
 
