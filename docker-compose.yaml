@@ -1,0 +1,18 @@
+services:
+  build:
+    build: /www/firey-ci/firey
+    container_name: firey-build
+    volumes:
+      - /www/firey-ci/firey:/www/firey-ci/firey
+
+  nginx:
+    image: nginx:alpine
+    container_name: firey-nginx
+    restart: always
+    ports:
+      - 10200:80
+    volumes:
+      - /www/firey-ci/firey/docs/.vitepress/dist:/www/firey-ci/firey/docs/.vitepress/dist
+      - /www/firey-ci/firey/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - build
