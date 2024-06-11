@@ -2,9 +2,14 @@
 
 A cross-era framework for Node Js Web services
 
+## Docs
+
+- [中文文档](http://ziyilike.com:10200)
+
 ## Installation
 
 #### Bun
+
 ```bash
 win:
 powershell -c "irm bun.sh/install.ps1 | iex"
