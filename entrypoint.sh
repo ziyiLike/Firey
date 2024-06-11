@@ -23,6 +23,7 @@ if [ -d $PC_DIR_FRONT"/.git" ]; then
 
 fi
     bun install
+    cd $PC_DIR_FRONT/docs
     bun docs:build
     echo -e $Info" 项目构建完成"
 
