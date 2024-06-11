@@ -22,8 +22,8 @@ if [ -d $PC_DIR_FRONT"/.git" ]; then
     echo -e $Info" 项目更新完成, 开始执行构建..."
 
 fi
-    bun install
     cd $PC_DIR_FRONT/docs
+    bun install
     bun docs:build
     echo -e $Info" 项目构建完成"
 
