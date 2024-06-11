@@ -22,6 +22,8 @@ if [ -d $PC_DIR_FRONT"/.git" ]; then
     echo -e $Info" 项目更新完成, 开始执行构建..."
 
 fi
+    cd $PC_DIR_FRONT/packages/firey
+    bun link
     cd $PC_DIR_FRONT/docs
     bun install
     bun docs:build
