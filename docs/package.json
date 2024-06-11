@@ -5,7 +5,7 @@
   "scripts": {
     "docs:dev": "vitepress dev --host",
     "docs:build": "vitepress build",
-    "docs:serve": "vitepress serve docs"
+    "docs:serve": "vitepress serve"
   },
   "devDependencies": {
     "sass": "^1.32.7",

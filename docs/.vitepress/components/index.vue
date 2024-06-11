@@ -9,7 +9,7 @@
 
 <script setup>
 const openPath = () => {
-  location.href = '/document/指南/前言'
+  location.href = '/document/指南/前言.html'
 }
 </script>
 
