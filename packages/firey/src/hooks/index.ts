@@ -7,11 +7,14 @@ import {useSetupMiddleware} from './useSetupMiddleware'
 import {useRuntimeEnv} from "./useRuntimeEnv";
 import {useLogger} from "./useLogger";
 import {useConfig} from "./useConfig";
+import {useConnectPool} from "./useConnectPool";
 
 import {defineConfig} from "./defineConfig";
+import {defineModel} from "./defineModel";
 
 export {
     defineConfig,
+    defineModel,
 
     useIncludeRouter,
     useMiddleware,
@@ -25,5 +28,6 @@ export {
     useSetupMiddleware,
     useRuntimeEnv,
     useLogger,
-    useConfig
+    useConfig,
+    useConnectPool
 }

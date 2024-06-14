@@ -11,10 +11,13 @@
     "prod": "pm2 start config/pm2.config.ts --only production",
     "stop": "pm2 stop config/pm2.config.ts",
     "build": "NODE_ENV=production && tsc",
-    "list": "pm2 list"
+    "list": "pm2 list",
+    "migrate": "bun .migrate/run/migrate.js",
+    "migrations": "bun .migrate/run/migrations.js"
   },
   "dependencies": {
     "firey": "link:firey",
+    "mysql2": "^3.10.1",
     "pm2": "^5.4.0"
   },
   "devDependencies": {

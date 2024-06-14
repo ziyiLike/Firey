@@ -1,6 +1,7 @@
 {
   "include": [
-    "./**/*.ts"
+    "./**/*.ts",
+    "./**/**/*.ts"
   ],
   "compilerOptions": {
     "types": [

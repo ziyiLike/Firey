@@ -1,10 +1,12 @@
 import http from "http";
 import {Appender, Configuration} from "log4js";
+import {PoolOptions} from 'mysql2'
 
 export namespace IFY {
 
     type Config = {
-        logger?: ConfigLogger
+        logger?: ConfigLogger,
+        database: Record<string, PoolOptions>
     }
 
     interface RuntimeEnv {
@@ -107,5 +109,17 @@ export namespace IFY {
         name: string
         content: string | undefined
     }
+
+    // with orm
+    type FieldOptions<T> = {
+        default?: any
+        nullable?: boolean
+        unique?: boolean
+        index?: boolean
+        primaryKey?: boolean
+        comment?: string
+    } & T
+
+    type StringFieldOptions = FieldOptions<{}>
 }
 
