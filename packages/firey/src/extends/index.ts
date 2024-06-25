@@ -17,14 +17,14 @@ export default class FireyExtends extends Effects {
     protected middlewares?: any = [];
     protected logger: log4js.Logger = log4js.getLogger()
 
-    response(res: http.ServerResponse) {
-        const response = useStore().response;
+    response(request: IFY.Request, res: http.ServerResponse) {
+        const response = request.__state.response;
         res.writeHead(response!.code, {'Content-Type': response!.contentType});
         res.end(response!.contentType === ContentType.APPLICATION_JSON ? JSON.stringify(response!.data) : response!.data);
     }
 
-    protected parseResponse() {
-        const response = useStore().response;
+    protected parseResponse(request: IFY.Request) {
+        const response = request.__state.response;
 
         if (!response) {
             throw new InternalServerError('No response');
@@ -60,6 +60,7 @@ export default class FireyExtends extends Effects {
             body: {
                 __chunksData: ''
             },
+            __state: state,
             __startTime
         })
 
@@ -142,7 +143,7 @@ export default class FireyExtends extends Effects {
         let middlewareIndex = 0;
 
         const _dispatch = async () => {
-            const state = useStore()
+            const state = request.__state
             let response = {} as IFY.Response;
 
             middlewareIndex++;
@@ -176,11 +177,11 @@ export default class FireyExtends extends Effects {
         })
     }
 
-    protected async _exceptionDispatchHandler(dispatch: () => Promise<void>) {
+    protected async _exceptionDispatchHandler(request: IFY.Request, dispatch: () => Promise<void>) {
         try {
             return await dispatch();
         } catch (err) {
-            const state = useStore()
+            const state = request.__state
             if (err instanceof BaseError && err.message !== 'No response') {
                 if (err.code === StatusCode.INTERNAL_SERVER_ERROR) {
                     this.logger.error(err)

@@ -1,15 +1,7 @@
 import {IFY} from "../types";
 
 class Store {
-    private static instance: Store | null = null;
     private data: Record<string, any> = {}; // 添加data属性及其类型定义
-
-    private constructor() {
-        if (!Store.instance) {
-            Store.instance = this;
-        }
-        return Store.instance;
-    }
 
     get response(): IFY.Response | undefined {
         return this.data.response;
@@ -36,11 +28,9 @@ class Store {
     }
 
     public static getInstance(): Store {
-        if (!Store.instance) {
-            Store.instance = new Store();
-        }
-        return Store.instance;
+        return new Store();
     }
 }
 
 export const useStore = Store.getInstance
+export type StoreType = ReturnType<typeof useStore>

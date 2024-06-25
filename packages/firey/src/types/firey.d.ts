@@ -1,6 +1,7 @@
 import http from "http";
 import {Appender, Configuration} from "log4js";
 import {PoolOptions} from 'mysql2'
+import {StoreType} from "../hooks/useStore";
 
 export namespace IFY {
 
@@ -26,9 +27,7 @@ export namespace IFY {
 
     type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
 
-    type State = Partial<{
-        response: Response;
-    }>
+    type State = StoreType
 
     type ResponseStatus = 'Wait' | 'Release'
 
@@ -70,6 +69,7 @@ export namespace IFY {
         query: Record<string, any>
         data: any
         body: RequestBody
+        __state: State
         __startTime: number
     }>
 

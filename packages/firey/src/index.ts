@@ -97,16 +97,18 @@ export default class Firey extends FireyExtends {
 
         const request = this.initRequest(req, res)
 
+        console.log(request.__state)
+
         this._requestDataChunksHandler(req, request, async () => {
             const _dispatch = this.dispatch(request, res);
 
-            await this._exceptionDispatchHandler(async () => {
+            await this._exceptionDispatchHandler(request, async () => {
                 this.middlewares.length ? await this.middlewares[0](request, res, _dispatch) : await _dispatch();
 
-                this.parseResponse();
+                this.parseResponse(request);
             });
 
-            this.response(res);
+            this.response(request, res);
         })
     }
 }
