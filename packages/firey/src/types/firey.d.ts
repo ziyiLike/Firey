@@ -109,17 +109,5 @@ export namespace IFY {
         name: string
         content: string | undefined
     }
-
-    // with orm
-    type FieldOptions<T> = {
-        default?: any
-        nullable?: boolean
-        unique?: boolean
-        index?: boolean
-        primaryKey?: boolean
-        comment?: string
-    } & T
-
-    type StringFieldOptions = FieldOptions<{}>
 }
 

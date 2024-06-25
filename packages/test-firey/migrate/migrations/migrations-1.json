@@ -1,0 +1,42 @@
+{
+  "date": "2024/6/25 15:34:37",
+  "isMigrate": false,
+  "models": {
+    "MenuModel": {},
+    "RoleModel": {},
+    "UserModel": {
+      "name": "users",
+      "fields": {
+        "id": {
+          "type": "AutoIncrement"
+        },
+        "name": {
+          "type": "String",
+          "length": 20,
+          "unique": true
+        },
+        "email": {
+          "type": "String",
+          "length": 255,
+          "nullable": false,
+          "index": true
+        },
+        "password": {
+          "type": "String",
+          "length": 20
+        },
+        "createdAt": {
+          "type": "DateTime",
+          "autoNowAdd": true
+        },
+        "updatedAt": {
+          "type": "DateTime",
+          "autoNow": true
+        },
+        "deletedAt": {
+          "type": "Date"
+        }
+      }
+    }
+  }
+}

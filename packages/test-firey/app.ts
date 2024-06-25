@@ -1,5 +1,5 @@
 import Firey, {router} from "firey/test";
-import {useIncludeRouter, useHtmlResponse, useTextResponse, useJsonResponse, useResponse} from "firey/hooks-test";
+import {useIncludeRouter, useJsonResponse, useResponse} from "firey/hooks-test";
 import {IFY} from "firey/types-test";
 
 export const app = new Firey(__dirname);

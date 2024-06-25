@@ -37,7 +37,8 @@
     "./hooks-test": "./src/hooks/index.ts",
     "./exceptions-test": "./src/exceptions/index.ts",
     "./enums-test/*": "./src/httpEnums/*.ts",
-    "./types-test": "./src/types/index.d.ts"
+    "./types-test": "./src/types/index.d.ts",
+    "./orm-test": "./src/dataclasses/index.ts"
   },
   "files": [
     "dist/src/*"

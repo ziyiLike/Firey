@@ -1,0 +1,73 @@
+{
+  "date": "2024/6/25 17:32:04",
+  "isMigrate": false,
+  "models": {
+    "MenuModel": {},
+    "RoleModel": {},
+    "UserModel": {
+      "name": "users",
+      "fields": {
+        "id": {
+          "type": "AutoIncrement"
+        },
+        "name": {
+          "type": "String",
+          "length": 30,
+          "unique": true
+        },
+        "sex": {
+          "type": "Boolean",
+          "defaultValue": true
+        },
+        "email": {
+          "type": "String",
+          "length": 255,
+          "nullable": false,
+          "index": true
+        },
+        "password1": {
+          "type": "String",
+          "length": 20
+        },
+        "createdAt": {
+          "type": "DateTime",
+          "autoNowAdd": true
+        },
+        "updatedAt": {
+          "type": "DateTime",
+          "autoNow": true
+        },
+        "deletedAt": {
+          "type": "Date"
+        }
+      }
+    }
+  },
+  "changes": [
+    {
+      "model": "UserModel",
+      "key": "name",
+      "type": "ALERT",
+      "field": {
+        "type": "String",
+        "length": 30,
+        "unique": true
+      }
+    },
+    {
+      "model": "UserModel",
+      "key": "sex",
+      "type": "ADD",
+      "field": {
+        "type": "Boolean",
+        "defaultValue": true
+      }
+    },
+    {
+      "model": "UserModel",
+      "key": "password1",
+      "oldKey": "password",
+      "type": "RENAME"
+    }
+  ]
+}

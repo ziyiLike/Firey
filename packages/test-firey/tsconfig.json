@@ -1,7 +1,6 @@
 {
   "include": [
-    "./**/*.ts",
-    "./**/**/*.ts"
+    "./**/*.ts"
   ],
   "compilerOptions": {
     "types": [
@@ -20,6 +19,11 @@
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "firey/hooks-test": [
+        "./node_modules/firey/src/hooks"
+      ]
+    }
   }
 }

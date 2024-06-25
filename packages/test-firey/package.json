@@ -12,8 +12,8 @@
     "stop": "pm2 stop config/pm2.config.ts",
     "build": "NODE_ENV=production && tsc",
     "list": "pm2 list",
-    "migrate": "bun .migrate/run/migrate.js",
-    "migrations": "bun .migrate/run/migrations.js"
+    "migrate": "bun migrate/run/migrate.js",
+    "migrations": "bun migrate/run/migrations.js"
   },
   "dependencies": {
     "firey": "link:firey",
