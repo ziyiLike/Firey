@@ -1,9 +1,22 @@
 {
-  "date": "2024/6/26 11:30:35",
+  "date": "2024/6/26 11:36:38",
   "isMigrate": false,
   "models": {
+    "TestModel": {
+      "name": "test",
+      "fields": {
+        "id": {
+          "type": "AutoIncrement"
+        },
+        "name": {
+          "type": "String",
+          "length": 30,
+          "unique": true
+        }
+      }
+    },
     "UserModel": {
-      "name": "users",
+      "name": "users-test",
       "fields": {
         "id": {
           "type": "AutoIncrement"
@@ -34,10 +47,6 @@
         "updatedAt": {
           "type": "DateTime",
           "autoNow": true
-        },
-        "deletedAt": {
-          "type": "DateTime",
-          "nullable": true
         }
       }
     }
@@ -45,22 +54,17 @@
   "changes": [
     {
       "model": "UserModel",
-      "key": "sex",
-      "type": "ALERT",
-      "field": {
-        "type": "Boolean",
-        "defaultValue": false
-      }
+      "type": "TABLENAME",
+      "oldName": "users",
+      "name": "users-test"
+    },
+    {
+      "model": "TestModel",
+      "type": "INIT"
     },
     {
       "model": "UserModel",
-      "key": "password1",
-      "oldKey": "password",
-      "type": "RENAME"
-    },
-    {
-      "model": "UserModel",
-      "key": "age",
+      "key": "deletedAt",
       "type": "REMOVE"
     }
   ]

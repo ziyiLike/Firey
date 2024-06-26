@@ -20,4 +20,6 @@ export const UserModel = defineModel({
  */
 
 
-export const defineModel = (model: any) => model
+import {IFYORM} from "../types";
+
+export const defineModel = (model: IFYORM.Model) => model

@@ -7,15 +7,7 @@ export namespace IFY {
 
     type Config = {
         logger?: ConfigLogger,
-        database: Record<string, PoolOptions>
-    }
-
-    interface RuntimeEnv {
-        FIREY_NODE_ENV: string
-        FIREY_PORT: number
-        FIREY_HOSTNAME: string
-        FIREY_DEBUG: boolean
-        FIREY_ROOT_PATH: string
+        database: ConfigDatabase
     }
 
     interface ConfigLogger {
@@ -25,23 +17,21 @@ export namespace IFY {
         categories?: { [name: string]: { appenders: string[], level: string } }
     }
 
+    type ConfigDatabase = Record<string, PoolOptions>
+
+    interface RuntimeEnv {
+        FIREY_NODE_ENV: string
+        FIREY_PORT: number
+        FIREY_HOSTNAME: string
+        FIREY_DEBUG: boolean
+        FIREY_ROOT_PATH: string
+    }
+
     type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "CONNECT" | "TRACE" | string
 
     type State = StoreType
 
     type ResponseStatus = 'Wait' | 'Release'
-
-    interface StoreDefinition<State, Actions> {
-        state: () => State;
-        getters?: { [key: string]: (state: State) => any };
-        actions?: {
-            [key in keyof Actions]: (context: {
-                state: State
-            }, ...args: Actions[key] extends ((...args: infer P) => any) ? P : never[]) => void
-        };
-    }
-
-    type SetState = (state: State) => void
 
     type Use = (middleware: Middleware) => void
 

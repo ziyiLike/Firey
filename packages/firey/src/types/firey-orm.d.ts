@@ -1,4 +1,23 @@
+import {IFY} from "./firey";
+import OPERATE_TYPE from "../httpEnums/OPERATE_TYPE";
+
 export namespace IFYORM {
+    interface Model {
+        name: string,
+        database?: keyof IFY.ConfigDatabase,
+        fields: Record<string, FieldOptions>
+    }
+
+    interface Change {
+        type: OPERATE_TYPE,
+        model: Model,
+        key?: string
+        fields?: Record<string, FieldOptions>
+        name?: string
+        oldName?: string
+        oldKey?: string
+    }
+
     type FieldOptions<T = any> = {
         defaultValue?: any
         nullable?: boolean

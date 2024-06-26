@@ -8,6 +8,8 @@ import {useRuntimeEnv} from "./useRuntimeEnv";
 import {useLogger} from "./useLogger";
 import {useConfig} from "./useConfig";
 import {useConnectPool} from "./useConnectPool";
+import {useAsyncGetFiles} from "./useAsyncGetFiles";
+import {useTransferMigrateSQL} from './useTransferMigrateSQL'
 
 import {defineConfig} from "./defineConfig";
 import {defineModel} from "./defineModel";
@@ -29,5 +31,7 @@ export {
     useRuntimeEnv,
     useLogger,
     useConfig,
-    useConnectPool
+    useConnectPool,
+    useAsyncGetFiles,
+    useTransferMigrateSQL
 }

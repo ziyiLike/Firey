@@ -1,9 +1,7 @@
 {
-  "date": "2024/6/25 15:34:37",
+  "date": "2024/6/26 11:29:19",
   "isMigrate": false,
   "models": {
-    "MenuModel": {},
-    "RoleModel": {},
     "UserModel": {
       "name": "users",
       "fields": {
@@ -12,8 +10,15 @@
         },
         "name": {
           "type": "String",
-          "length": 20,
+          "length": 30,
           "unique": true
+        },
+        "sex": {
+          "type": "Boolean",
+          "defaultValue": true
+        },
+        "age": {
+          "type": "Int"
         },
         "email": {
           "type": "String",
@@ -34,9 +39,16 @@
           "autoNow": true
         },
         "deletedAt": {
-          "type": "Date"
+          "type": "DateTime",
+          "nullable": true
         }
       }
     }
-  }
+  },
+  "changes": [
+    {
+      "model": "UserModel",
+      "type": "INIT"
+    }
+  ]
 }

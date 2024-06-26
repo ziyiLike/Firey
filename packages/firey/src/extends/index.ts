@@ -1,7 +1,7 @@
 import http from "http";
-import ContentType from "../httpEnums/contentType";
+import CONTENT_TYPE from "../httpEnums/CONTENT_TYPE";
 import {BaseError, InternalServerError, NotFoundError, ResponseError} from "../exceptions";
-import StatusCode from "../httpEnums/statusCode";
+import STATUS_CODE from "../httpEnums/STATUS_CODE";
 import log4js from "log4js";
 import {IFY} from "../types";
 import {Effects} from "./effects";
@@ -20,7 +20,7 @@ export default class FireyExtends extends Effects {
     response(request: IFY.Request, res: http.ServerResponse) {
         const response = request.__state.response;
         res.writeHead(response!.code, {'Content-Type': response!.contentType});
-        res.end(response!.contentType === ContentType.APPLICATION_JSON ? JSON.stringify(response!.data) : response!.data);
+        res.end(response!.contentType === CONTENT_TYPE.APPLICATION_JSON ? JSON.stringify(response!.data) : response!.data);
     }
 
     protected parseResponse(request: IFY.Request) {
@@ -183,20 +183,20 @@ export default class FireyExtends extends Effects {
         } catch (err) {
             const state = request.__state
             if (err instanceof BaseError && err.message !== 'No response') {
-                if (err.code === StatusCode.INTERNAL_SERVER_ERROR) {
+                if (err.code === STATUS_CODE.INTERNAL_SERVER_ERROR) {
                     this.logger.error(err)
                 }
                 state.releaseResponse = {
                     code: err.code!,
                     data: {message: this.debug ? err.message || err.name : err.name},
-                    contentType: ContentType.APPLICATION_JSON
+                    contentType: CONTENT_TYPE.APPLICATION_JSON
                 }
             } else {
                 this.logger.error(err)
                 state.releaseResponse = {
-                    code: StatusCode.INTERNAL_SERVER_ERROR,
+                    code: STATUS_CODE.INTERNAL_SERVER_ERROR,
                     data: 'Internal Server Error',
-                    contentType: ContentType.TEXT_PLAIN
+                    contentType: CONTENT_TYPE.TEXT_PLAIN
                 }
             }
         }

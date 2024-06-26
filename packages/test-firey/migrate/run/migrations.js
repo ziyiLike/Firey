@@ -1,43 +1,45 @@
-import {useRuntimeEnv} from 'firey/hooks-test'
-import fs from 'fs';
+import {useRuntimeEnv, useAsyncGetFiles} from 'firey/hooks-test'
 import path from 'path';
+import {createInterface} from 'readline/promises'
+import OPERATE_TYPE from "firey/enums-test/OPERATE_TYPE";
 
 useRuntimeEnv('FIREY_ROOT_PATH', path.resolve(__dirname, '../../'))
 
-const getAllFiles = async (dirPath) => {
-    const files = await fs.promises.readdir(dirPath);
-    let filePaths = [];
+const rl = createInterface({input: process.stdin, output: process.stdout})
 
-    for (const file of files) {
-        const filePath = path.join(dirPath, file);
-        const stats = await fs.promises.stat(filePath);
-
-        if (stats.isDirectory()) {
-            filePaths = filePaths.concat(await getAllFiles(filePath));
-        } else {
-            filePaths.push(filePath);
-        }
+const inputMessage = async (key, models, model, deleteFields, deleteField, savedMigrations) => {
+    const line = await rl.question(`Did you rename ${model}.${deleteField.key} to ${model}.${key} (a ${deleteField.field.type} Field)? [y/n]`)
+    if (line.toLowerCase() !== 'n') {
+        savedMigrations.changes.push({
+            model,
+            key,
+            oldKey: deleteField.key,
+            type: OPERATE_TYPE.RENAME
+        })
+        deleteFields.splice(deleteFields.indexOf(deleteField), 1)
+        console.log(`- Rename ${model}.${deleteField.key} to ${model}.${key}`)
+    } else {
+        savedMigrations.changes.push({
+            model,
+            key,
+            type: OPERATE_TYPE.ADD,
+            field: models[model].fields[key]
+        })
+        console.log(`- Add ${model}.${key}`)
     }
-    return filePaths;
 }
 
 const install = async () => {
     try {
         const dirPath = 'migrate/models';
         const migrationsPath = 'migrate/migrations';
-        const migrationsFiles = await getAllFiles(migrationsPath);
-        const allFiles = await getAllFiles(dirPath);
+        const migrationsFiles = await useAsyncGetFiles(migrationsPath);
+        const allFiles = await useAsyncGetFiles(dirPath);
         const savedMigrations = {
             date: new Date().toLocaleString(),
             isMigrate: false,
             models: {},
             changes: []
-        }
-        const OPERATE_TYPE = {
-            ADD: 'ADD',
-            REMOVE: 'REMOVE',
-            ALERT: 'ALERT',
-            RENAME: 'RENAME'
         }
         let maxNum = 0
         let isChanged = false
@@ -51,8 +53,15 @@ const install = async () => {
                 for (const model in models) {
                     const deleteFields = []
                     if (migrationData.models[model]) {
+                        if (migrationData.models[model].name !== models[model].name) {
+                            savedMigrations.changes.unshift({
+                                model,
+                                type: OPERATE_TYPE.TABLENAME,
+                                oldName: migrationData.models[model].name,
+                                name: models[model].name
+                            })
+                        }
                         if (JSON.stringify(migrationData.models[model]) !== JSON.stringify(models[model])) {
-                            isChanged = true
                             for (const key in migrationData.models[model].fields) {
                                 if (!models[model].fields[key]) {
                                     deleteFields.push({
@@ -64,49 +73,31 @@ const install = async () => {
                             for (const key in models[model].fields) {
                                 if (migrationData.models[model].fields[key]) {
                                     if (JSON.stringify(migrationData.models[model].fields[key]) !== JSON.stringify(models[model].fields[key])) {
-                                        console.log(`- Alert ${model}.${key}`)
                                         savedMigrations.changes.push({
                                             model,
                                             key,
                                             type: OPERATE_TYPE.ALERT,
                                             field: models[model].fields[key]
                                         })
+                                        console.log(`- Alert ${model}.${key}`)
                                     }
                                 } else {
+                                    let isUpdate = false
                                     if (deleteFields.length) {
                                         for (const deleteField of deleteFields) {
-                                            if (JSON.stringify(deleteField.field) === JSON.stringify(models[model].fields[key])) {
-                                                console.write(`Did you rename ${model}.${deleteField.key} to ${model}.${key} (a ${deleteField.field.type} Field)? [y/n]`);
-                                                for await (const line of console) {
-                                                    if (line.toLowerCase() === 'y') {
-                                                        savedMigrations.changes.push({
-                                                            model,
-                                                            key,
-                                                            oldKey: deleteField.key,
-                                                            type: OPERATE_TYPE.RENAME
-                                                        })
-                                                        deleteFields.splice(deleteFields.indexOf(deleteField), 1)
-                                                        console.log(`- Rename ${model}.${deleteField.key} to ${model}.${key}`)
-                                                    } else {
-                                                        savedMigrations.changes.push({
-                                                            model,
-                                                            key,
-                                                            type: OPERATE_TYPE.ADD,
-                                                            field: models[model].fields[key]
-                                                        })
-                                                        console.log(`- Add ${model}.${key}`)
-                                                    }
-                                                    break
-                                                }
-                                            } else {
-                                                savedMigrations.changes.push({
-                                                    model,
-                                                    key,
-                                                    type: OPERATE_TYPE.ADD,
-                                                    field: models[model].fields[key]
-                                                })
-                                                console.log(`- Add ${model}.${key}`)
+                                            if (JSON.stringify(deleteField.field) === JSON.stringify(models[model].fields[key]) && !isUpdate) {
+                                                isUpdate = true
+                                                await inputMessage(key, models, model, deleteFields, deleteField, savedMigrations)
                                             }
+                                        }
+                                        if (!isUpdate) {
+                                            savedMigrations.changes.push({
+                                                model,
+                                                key,
+                                                type: OPERATE_TYPE.ADD,
+                                                field: models[model].fields[key]
+                                            })
+                                            console.log(`- Add ${model}.${key}`)
                                         }
                                     } else {
                                         savedMigrations.changes.push({
@@ -124,26 +115,35 @@ const install = async () => {
                             savedMigrations.changes.push({
                                 model,
                                 key: deleteField.key,
-                                type: OPERATE_TYPE.DELETE
+                                type: OPERATE_TYPE.REMOVE
                             })
                             console.log(`- Delete ${model}.${deleteField.key}`)
                         }
+                        savedMigrations.changes.length && (isChanged = true)
                         savedMigrations.models[model] = models[model]
                     } else {
                         isChanged = true
-                        console.log(`- Add model ${model}`)
                         savedMigrations.models[model] = models[model]
+                        savedMigrations.changes.push({
+                            model,
+                            type: OPERATE_TYPE.INIT
+                        })
+                        console.log(`- Add model ${model}`)
                     }
                 }
             }
         } else {
             isChanged = true
-            console.log('- Init all models')
+            console.log('You have no migrations, Initialize your models first.')
             for (const filePath of allFiles) {
                 const models = require('../../' + filePath);
                 for (const model in models) {
-                    console.log(`- Add model ${model}`)
                     savedMigrations.models[model] = models[model]
+                    savedMigrations.changes.push({
+                        model,
+                        type: OPERATE_TYPE.INIT
+                    })
+                    console.log(`- Add model ${model}`)
                 }
             }
         }
@@ -159,4 +159,7 @@ const install = async () => {
 };
 
 
-install().then(() => process.exit(0))
+install().then(() => {
+    rl.close();
+    process.exit(0)
+})

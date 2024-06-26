@@ -1,4 +1,4 @@
-export default class ContentType {
+export default class CONTENT_TYPE {
     static readonly APPLICATION_JSON = 'application/json';
     static readonly APPLICATION_FORM_URLENCODED = 'application/x-www-form-urlencoded';
     static readonly APPLICATION_OCTET_STREAM = 'application/octet-stream';

@@ -1,6 +1,6 @@
 // status codes
 
-export default class StatusCode {
+export default class STATUS_CODE {
     static OK = 200;  // 成功
     static CREATED = 201; // 创建成功
     static ACCEPTED = 202; // 创建成功
@@ -47,4 +47,4 @@ export default class StatusCode {
     }
 }
 
-export {StatusCode}
+export {STATUS_CODE}
