@@ -10,6 +10,7 @@ import {useConfig} from "./useConfig";
 import {useConnectPool} from "./useConnectPool";
 import {useAsyncGetFiles} from "./useAsyncGetFiles";
 import {useTransferMigrateSQL} from './useTransferMigrateSQL'
+import {useDeepClone} from './useDeepClone'
 
 import {defineConfig} from "./defineConfig";
 import {defineModel} from "./defineModel";
@@ -33,5 +34,6 @@ export {
     useConfig,
     useConnectPool,
     useAsyncGetFiles,
-    useTransferMigrateSQL
+    useTransferMigrateSQL,
+    useDeepClone
 }

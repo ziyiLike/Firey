@@ -2,7 +2,7 @@ import {defineModel} from "firey/hooks-test";
 import {Field} from "firey/orm-test"
 
 export const UserModel = defineModel({
-    name: 'users-test',
+    name: 'users_test',
     fields: {
         id: Field.AutoIncrement(),
         name: Field.String(30, {unique: true}),

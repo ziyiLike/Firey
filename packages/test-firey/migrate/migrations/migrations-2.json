@@ -50,6 +50,10 @@
       "field": {
         "type": "Boolean",
         "defaultValue": false
+      },
+      "oldField": {
+        "type": "Boolean",
+        "defaultValue": true
       }
     },
     {

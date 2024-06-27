@@ -16,16 +16,21 @@ for (const file of migrationsFiles) {
 
 !preMigrations.length && console.log('No migrations to migrate') && process.exit(0)
 
-const getCachePool = async (database, cache = {}) => {
+const getCacheConnect = async (database, cache = {}) => {
     if (cache[database]) return cache[database]
-    const pool = await useConnectPool(database)
-    cache[database] = pool
-    return pool
+    const connect = await useConnectPool(database)
+    cache[database] = connect
+    return connect
 }
 
 for (const migration of preMigrations) {
     for (const change of migration.changes) {
-        const pool = await getCachePool(change.database)
+        const connect = await getCacheConnect(change.database)
         const sql = useTransferMigrateSQL(migration.models[change.model], change)
+        await connect.execute(sql)
+        console.log(`- ${change.model}${change.key ? `.${change.key}` : ''} [${change.type}] OK`)
     }
 }
+
+console.log('All Changes Migrate OK')
+process.exit(0)

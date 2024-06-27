@@ -7,7 +7,7 @@ export class Field {
     static Int = (options?: IFYORM.NumberFieldOptions) => ({type: 'Int', ...options})
     static BigInt = (options?: IFYORM.NumberFieldOptions) => ({type: 'BigInt', ...options})
     static Float = (options?: IFYORM.NumberFieldOptions) => ({type: 'Float', ...options})
-    static Decimal = (options?: IFYORM.NumberFieldOptions) => ({type: 'Decimal', ...options})
+    static Decimal = (options?: IFYORM.DecimalFieldOptions) => ({type: 'Decimal', ...options})
     static Boolean = (options?: IFYORM.BooleanFieldOptions) => ({type: 'Boolean', ...options})
     static Date = (options?: IFYORM.DateFieldOptions) => ({type: 'Date', ...options})
     static Time = (options?: IFYORM.DateFieldOptions) => ({type: 'Time', ...options})

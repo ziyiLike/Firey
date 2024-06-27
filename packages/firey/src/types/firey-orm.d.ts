@@ -12,7 +12,8 @@ export namespace IFYORM {
         type: OPERATE_TYPE,
         model: Model,
         key?: string
-        fields?: Record<string, FieldOptions>
+        field?: Record<string, FieldOptions>
+        oldField?: Record<string, FieldOptions>
         name?: string
         oldName?: string
         oldKey?: string

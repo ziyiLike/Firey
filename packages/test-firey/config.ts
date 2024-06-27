@@ -26,7 +26,7 @@ export default defineConfig({
             port: 3306,
             user: 'root',
             password: '123456',
-            database: 'firey' // 如果有特定数据库
+            database: 'firey'
         },
         test: {
             type: 'mysql',

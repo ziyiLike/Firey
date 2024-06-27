@@ -77,7 +77,8 @@ const install = async () => {
                                             model,
                                             key,
                                             type: OPERATE_TYPE.ALERT,
-                                            field: models[model].fields[key]
+                                            field: models[model].fields[key],
+                                            oldField: migrationData.models[model].fields[key]
                                         })
                                         console.log(`- Alert ${model}.${key}`)
                                     }

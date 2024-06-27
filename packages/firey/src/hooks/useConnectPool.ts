@@ -12,19 +12,35 @@ export const useConnectPool = async (dbName?: string) => {
 
     if (dbType === 'mysql') {
         const pool = mysql.createPool(poolConfig);
+        const connection = await pool.getConnection().catch(err => {
+            throw err
+        })
 
-        return async (sql: string, params = []) => {
-            const connection = await pool.getConnection().catch(err => {
-                throw err
-            })
-            try {
-                return await connection.execute(sql, params);
-            } catch (err) {
-                throw err;
-            } finally {
-                connection.release();
+        class Connect {
+            conn: mysql.PoolConnection;
+
+            constructor() {
+                this.conn = connection;
+            }
+
+            async execute(sql: string, params = []) {
+                !sql.endsWith(';') && (sql += ';')
+                connection.beginTransaction()
+                try {
+                    const result = await connection.execute(sql, params);
+                    connection.commit();
+                    return result;
+                } catch (err) {
+                    console.log(`Execute SQL Error: ${sql}`)
+                    connection.rollback();
+                    throw err;
+                } finally {
+                    connection.release();
+                }
             }
         }
+
+        return new Connect();
     }
 
 }

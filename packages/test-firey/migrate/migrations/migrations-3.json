@@ -16,7 +16,7 @@
       }
     },
     "UserModel": {
-      "name": "users-test",
+      "name": "users_test",
       "fields": {
         "id": {
           "type": "AutoIncrement"
@@ -56,7 +56,7 @@
       "model": "UserModel",
       "type": "TABLENAME",
       "oldName": "users",
-      "name": "users-test"
+      "name": "users_test"
     },
     {
       "model": "TestModel",
