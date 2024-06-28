@@ -1,6 +1,15 @@
 import {Field} from "./Field";
+import type {FieldType} from "./Field";
+import {Relation} from "./Relation";
+import type {RelationType} from "./Relation";
 
 
 export {
-    Field
+    Field,
+    Relation
+}
+
+export type {
+    FieldType,
+    RelationType
 }

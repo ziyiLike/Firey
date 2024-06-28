@@ -1,5 +1,5 @@
 import {defineModel} from "firey/hooks-test";
-import {Field} from "firey/orm-test"
+import {Field, Relation} from "firey/orm-test"
 
 export const UserModel = defineModel({
     name: 'users_test',
@@ -11,7 +11,8 @@ export const UserModel = defineModel({
         password1: Field.String(20),
         createdAt: Field.DateTime({autoNowAdd: true}),
         updatedAt: Field.DateTime({autoNow: true}),
-    },
+        // test: Relation.ForeignKey("TestModel", {related: "users", onDelete: 'SetNull', nullable: true})
+    }
 })
 
 export const TestModel = defineModel({

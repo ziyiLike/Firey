@@ -18,29 +18,47 @@ export const useConnectPool = async (dbName?: string) => {
 
         class Connect {
             conn: mysql.PoolConnection;
+            autoTransaction = false;
 
-            constructor() {
+            constructor(autoTransaction: boolean = false) {
                 this.conn = connection;
+                this.autoTransaction = autoTransaction;
             }
 
-            async execute(sql: string, params = []) {
+            public async beginTransaction() {
+                await connection.beginTransaction();
+            }
+
+            public async commit() {
+                await connection.commit();
+            }
+
+            public async rollback() {
+                await connection.rollback();
+            }
+
+            public async release() {
+                await connection.release();
+            }
+
+            public async execute(sql: string, params = []) {
                 !sql.endsWith(';') && (sql += ';')
-                connection.beginTransaction()
+                this.autoTransaction && connection.beginTransaction()
                 try {
-                    const result = await connection.execute(sql, params);
-                    connection.commit();
+                    const result = await connection.query(sql, params);
+                    this.autoTransaction && connection.commit();
                     return result;
                 } catch (err) {
                     console.log(`Execute SQL Error: ${sql}`)
-                    connection.rollback();
+                    this.autoTransaction && connection.rollback();
                     throw err;
                 } finally {
-                    connection.release();
+                    this.autoTransaction && connection.release();
                 }
             }
         }
 
-        return new Connect();
+        return Connect;
     }
 
 }

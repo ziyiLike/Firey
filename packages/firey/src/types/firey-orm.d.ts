@@ -5,7 +5,8 @@ export namespace IFYORM {
     interface Model {
         name: string,
         database?: keyof IFY.ConfigDatabase,
-        fields: Record<string, FieldOptions>
+        fields?: Record<string, FieldOptions>,
+        relations?: Record<string, RelationOptions>,
     }
 
     interface Change {
@@ -19,6 +20,7 @@ export namespace IFYORM {
         oldKey?: string
     }
 
+    // Customer Field Options
     type FieldOptions<T = any> = {
         defaultValue?: any
         nullable?: boolean
@@ -27,7 +29,6 @@ export namespace IFYORM {
         primaryKey?: boolean
         comment?: string
     } & T
-
     type StringFieldOptions = FieldOptions<{}>
     type TextFieldOptions = FieldOptions<{}>
     type NumberFieldOptions = FieldOptions<{
@@ -44,4 +45,20 @@ export namespace IFYORM {
         autoNowAdd?: boolean
     }>
     type JsonFieldOptions = FieldOptions<{}>
+
+    // Relation Options
+    type RelationOptions<T = any> = {
+        related?: string
+        nullable?: boolean
+        comment?: string
+    } & T
+    type OneToOneOptions = RelationOptions<{
+        onDelete?: 'Cascade' | 'SetNull' | 'SetDefault' | 'NoAction'
+    }>
+    type ForeignKeyOptions = RelationOptions<{
+        onDelete?: 'Cascade' | 'SetNull' | 'SetDefault' | 'NoAction'
+    }>
+    type ManyToManyOptions = RelationOptions<{
+        through?: string
+    }>
 }
