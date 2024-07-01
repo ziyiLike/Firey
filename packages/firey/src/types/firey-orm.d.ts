@@ -18,6 +18,7 @@ export namespace IFYORM {
         name?: string
         oldName?: string
         oldKey?: string
+        isMigrate?: boolean
     }
 
     // Customer Field Options

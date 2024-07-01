@@ -1,6 +1,6 @@
 {
-  "date": "2024/6/26 11:36:38",
-  "isMigrate": false,
+  "date": "2024/7/1 16:43:58",
+  "isMigrate": true,
   "models": {
     "TestModel": {
       "name": "test",
@@ -16,7 +16,7 @@
       }
     },
     "UserModel": {
-      "name": "users-test",
+      "name": "users_test",
       "fields": {
         "id": {
           "type": "AutoIncrement"
@@ -56,16 +56,20 @@
       "model": "UserModel",
       "type": "TABLENAME",
       "oldName": "users",
-      "name": "users_test"
+      "name": "users_test",
+      "isMigrate": true
     },
     {
       "model": "TestModel",
-      "type": "INIT"
+      "type": "INIT",
+      "isMigrate": true
     },
     {
       "model": "UserModel",
       "key": "deletedAt",
-      "type": "REMOVE"
+      "type": "REMOVE",
+      "isMigrate": true
     }
-  ]
+  ],
+  "fileName": "migrate\\migrations\\migrations-3.json"
 }

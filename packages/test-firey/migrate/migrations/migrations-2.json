@@ -1,6 +1,6 @@
 {
   "date": "2024/6/26 11:30:35",
-  "isMigrate": false,
+  "isMigrate": true,
   "models": {
     "UserModel": {
       "name": "users",
@@ -54,18 +54,22 @@
       "oldField": {
         "type": "Boolean",
         "defaultValue": true
-      }
+      },
+      "isMigrate": true
     },
     {
       "model": "UserModel",
       "key": "password1",
       "oldKey": "password",
-      "type": "RENAME"
+      "type": "RENAME",
+      "isMigrate": true
     },
     {
       "model": "UserModel",
       "key": "age",
-      "type": "REMOVE"
+      "type": "REMOVE",
+      "isMigrate": true
     }
-  ]
+  ],
+  "fileName": "migrate\\migrations\\migrations-2.json"
 }

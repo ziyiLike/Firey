@@ -1,6 +1,6 @@
 {
   "date": "2024/6/26 11:29:19",
-  "isMigrate": false,
+  "isMigrate": true,
   "models": {
     "UserModel": {
       "name": "users",
@@ -48,7 +48,9 @@
   "changes": [
     {
       "model": "UserModel",
-      "type": "INIT"
+      "type": "INIT",
+      "isMigrate": true
     }
-  ]
+  ],
+  "fileName": "migrate\\migrations\\migrations-1.json"
 }

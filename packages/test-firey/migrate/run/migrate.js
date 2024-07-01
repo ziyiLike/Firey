@@ -1,5 +1,4 @@
 import {useRuntimeEnv, useConnectPool, useAsyncGetFiles, useTransferMigrateSQL} from 'firey/hooks-test'
-import fs from 'fs';
 import path from 'path';
 
 useRuntimeEnv('FIREY_ROOT_PATH', path.resolve(__dirname, '../../'))
@@ -11,45 +10,56 @@ const preMigrations = []
 
 for (const file of migrationsFiles) {
     const migrationData = await Bun.file(file, {type: 'application/json'}).json()
-    !migrationData.isMigrate && preMigrations.push(migrationData)
+    !migrationData.isMigrate && preMigrations.push({...migrationData, fileName: file})
 }
 
-!preMigrations.length && console.log('No migrations to migrate') && process.exit(0)
+!preMigrations.length && (console.log('No migrations to migrate') , process.exit(0))
 
 const getCacheConnect = async (database) => {
     if (cache[database]) return cache[database]
     const connect = await useConnectPool(database)
     if (!connect) throw new Error(`Database ${database} not found`)
-    const content_ = new connect(false)
-    await content_.beginTransaction()
-    cache[database] = content_
-    return content_
+    const {conn, execute} = await connect()
+    await conn.beginTransaction()
+    cache[database] = {conn, execute}
+    return {conn, execute}
 }
 
-try {
+const autoSaveMigrateHistory = async () => {
     for (const migration of preMigrations) {
-        for (const change of migration.changes) {
-            const connect = await getCacheConnect(change.database || 'default')
+        await Bun.write(migration.fileName, JSON.stringify(migration, null, 4))
+    }
+}
+
+
+for (const migration of preMigrations) {
+    try {
+        for (const change of migration.changes.filter(change => !change.isMigrate)) {
+            const {execute} = await getCacheConnect(change.database || 'default')
             const sql = useTransferMigrateSQL(migration.models[change.model], change)
-            await connect.execute(sql)
+            await execute(sql)
+            change.isMigrate = true
             console.log(`- ${change.model}${change.key ? `.${change.key}` : ''} [${change.type}] OK`)
         }
+        migration.isMigrate = true
+    } catch (e) {
+        for (const database in cache) {
+            const {conn} = cache[database]
+            await conn.release()
+        }
+        migration.isMigrate = false
+        await autoSaveMigrateHistory()
+        console.error(e)
+        process.exit(1)
+    } finally {
+        for (const database in cache) {
+            const {conn} = cache[database]
+            await conn.release()
+        }
+        await autoSaveMigrateHistory()
     }
-} catch (e) {
-    for (const database in cache) {
-        const connect = cache[database]
-        await connect.rollback()
-        await connect.release()
-    }
-    console.error(e)
-    process.exit(1)
 }
 
-// for (const database in cache) {
-//     const connect = cache[database]
-//     await connect.commit()
-//     await connect.release()
-// }
 
-console.log('All Changes Migrate OK')
+console.log('All Changes Migrate is OK')
 process.exit(0)

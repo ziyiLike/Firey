@@ -12,53 +12,26 @@ export const useConnectPool = async (dbName?: string) => {
 
     if (dbType === 'mysql') {
         const pool = mysql.createPool(poolConfig);
-        const connection = await pool.getConnection().catch(err => {
-            throw err
-        })
 
-        class Connect {
-            conn: mysql.PoolConnection;
-            autoTransaction = false;
+        return async () => {
+            const conn = await pool.getConnection().catch(err => {
+                throw err
+            })
 
-            constructor(autoTransaction: boolean = false) {
-                this.conn = connection;
-                this.autoTransaction = autoTransaction;
-            }
-
-            public async beginTransaction() {
-                await connection.beginTransaction();
-            }
-
-            public async commit() {
-                await connection.commit();
-            }
-
-            public async rollback() {
-                await connection.rollback();
-            }
-
-            public async release() {
-                await connection.release();
-            }
-
-            public async execute(sql: string, params = []) {
+            const execute = async (sql: string, params = []) => {
                 !sql.endsWith(';') && (sql += ';')
-                this.autoTransaction && connection.beginTransaction()
                 try {
-                    const result = await connection.query(sql, params);
-                    this.autoTransaction && connection.commit();
-                    return result;
+                    return await conn.execute(sql, params);
                 } catch (err) {
                     console.log(`Execute SQL Error: ${sql}`)
-                    this.autoTransaction && connection.rollback();
                     throw err;
-                } finally {
-                    this.autoTransaction && connection.release();
                 }
             }
-        }
-
-        return Connect;
+            return {
+                conn,
+                execute
+            }
+        };
     }
 
 }
