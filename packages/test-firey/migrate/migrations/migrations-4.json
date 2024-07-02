@@ -1,0 +1,75 @@
+{
+  "date": "2024/7/2 09:29:21",
+  "isMigrate": false,
+  "models": {
+    "TestModel": {
+      "name": "test",
+      "fields": {
+        "id": {
+          "type": "AutoIncrement"
+        },
+        "name": {
+          "type": "String",
+          "length": 30,
+          "unique": true
+        }
+      }
+    },
+    "UserModel": {
+      "name": "users_test",
+      "fields": {
+        "id": {
+          "type": "AutoIncrement"
+        },
+        "name": {
+          "type": "String",
+          "length": 30,
+          "unique": true
+        },
+        "sex": {
+          "type": "Boolean",
+          "defaultValue": false
+        },
+        "email": {
+          "type": "String",
+          "length": 255,
+          "nullable": false,
+          "index": true
+        },
+        "password1": {
+          "type": "String",
+          "length": 20
+        },
+        "createdAt": {
+          "type": "DateTime",
+          "autoNowAdd": true
+        },
+        "updatedAt": {
+          "type": "DateTime",
+          "autoNow": true
+        },
+        "test": {
+          "type": "ForeignKey",
+          "model": "TestModel",
+          "related": "users",
+          "onDelete": "SetNull",
+          "nullable": true
+        }
+      }
+    }
+  },
+  "changes": [
+    {
+      "model": "UserModel",
+      "key": "test",
+      "type": "ADD",
+      "field": {
+        "type": "ForeignKey",
+        "model": "TestModel",
+        "related": "users",
+        "onDelete": "SetNull",
+        "nullable": true
+      }
+    }
+  ]
+}

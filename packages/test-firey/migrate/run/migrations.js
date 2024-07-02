@@ -4,7 +4,10 @@ import {createInterface} from 'readline/promises'
 import OPERATE_TYPE from "firey/enums-test/OPERATE_TYPE";
 import fs from "fs";
 
-useRuntimeEnv('FIREY_ROOT_PATH', path.resolve(__dirname, '../../'))
+const rootPath = '../../'
+const dirPath = 'migrate/models';
+const migrationsPath = 'migrate/migrations';
+useRuntimeEnv('FIREY_ROOT_PATH', path.resolve(__dirname, rootPath))
 
 const rl = createInterface({input: process.stdin, output: process.stdout})
 
@@ -32,6 +35,7 @@ const eq = (obj1, obj2) => {
 }
 
 const $ = (oldChanges, newChange) => {
+    if (Object.keys(oldChanges).length === 0) return newChange
     for (const oldChange of oldChanges) {
         const oldChange_clone = useDeepClone(oldChange)
         const isMigrate = oldChange_clone.isMigrate
@@ -67,8 +71,6 @@ const inputMessage = async (key, models, model, deleteFields, deleteField, saved
 
 const install = async () => {
     try {
-        const dirPath = 'migrate/models';
-        const migrationsPath = 'migrate/migrations';
         const migrationsFiles = await useAsyncGetFiles(migrationsPath);
         const allFiles = await useAsyncGetFiles(dirPath);
         const savedMigrations = {
@@ -89,7 +91,7 @@ const install = async () => {
             const oldChanges = isCreateNewFile ? {} : migrationData_new.changes
 
             for (const filePath of allFiles) {
-                const models = require('../../' + filePath);
+                const models = require(rootPath + filePath);
                 for (const model in models) {
                     const deleteFields = []
                     if (migrationData.models[model]) {
@@ -176,7 +178,7 @@ const install = async () => {
             isCreateNewFile = true
             console.log('You have no migrations, Initialize your models first.')
             for (const filePath of allFiles) {
-                const models = require('../../' + filePath);
+                const models = require(rootPath + filePath);
                 for (const model in models) {
                     savedMigrations.models[model] = models[model]
                     savedMigrations.changes.push({

@@ -7,8 +7,9 @@ const uniqueSuffix = '_unique'
 const _ = (val: any, text: string) => val === undefined ? '' : val ? text : ''
 const capitalizeFirstLetter = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 
-const transferForMysql = (model: IFYORM.Model, change: IFYORM.Change) => {
+const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: IFYORM.Change) => {
     let sql = ""
+    const relationSql = []
 
     const getDefaultValue = (field: IFYORM.FieldOptions) => {
         if (field.defaultValue === undefined) return ''
@@ -21,29 +22,36 @@ const transferForMysql = (model: IFYORM.Model, change: IFYORM.Change) => {
         return ` DEFAULT \'${field.defaultValue}\'`
     }
 
-    const optionsStr = (fieldName: string, field: IFYORM.FieldOptions) => {
+    const optionsStr = (fieldName: string, field: IFYORM.FieldOptions | IFYORM.RelationOptions) => {
         const createIndex = field.index ? `, INDEX ${fieldName + indexSuffix}(${fieldName})` : ''
-        const createUnique = field.unique ? `, UNIQUE ${fieldName + uniqueSuffix}(${fieldName})` : ''
+        const createUnique = (field.unique || field.type === 'OneToOne') ? `, UNIQUE ${fieldName + uniqueSuffix}(${fieldName})` : ''
+
+        if (['ForeignKey', 'OneToOne'].includes(field.type)) {
+            const relationModel = models[field.model]
+            relationSql.push(`ALTER TABLE ${model.name} ADD CONSTRAINT fk_${fieldName}_${relationModel.name} FOREIGN KEY (${relationModel.name}_id) REFERENCES ${relationModel.name}(id);`)
+        }
 
         return `${_(field.primaryKey, ' PRIMARY KEY')}${_(field.nullable, ' NULL')}${getDefaultValue(field)}${_(field.COMMENT, ` COMMENT '${field.COMMENT}'`)}` + createIndex + createUnique
     }
 
     const getFieldType = (fieldType: string) => {
         const fieldTypeMap: Record<string, string> = {
-            String: 'VARCHAR',
-            Int: 'INT',
-            BigInt: 'BIGINT',
-            Float: 'FLOAT',
-            Decimal: 'DECIMAL',
-            Date: 'DATE',
-            DateTime: 'DATETIME',
-            Time: 'TIME',
-            Boolean: 'TINYINT',
-            Json: 'JSON',
-            Text: 'TEXT',
-            AutoIncrement: 'INT PRIMARY KEY AUTO_INCREMENT'
+            String: ' VARCHAR',
+            Int: ' INT',
+            BigInt: ' BIGINT',
+            Float: ' FLOAT',
+            Decimal: ' DECIMAL',
+            Date: ' DATE',
+            DateTime: ' DATETIME',
+            Time: ' TIME',
+            Boolean: ' TINYINT',
+            Json: ' JSON',
+            Text: ' TEXT',
+            AutoIncrement: ' INT PRIMARY KEY AUTO_INCREMENT',
+            ForeignKey: '_id INT',
+            OneToOne: '_id INT'
         }
-        return ' ' + fieldTypeMap[fieldType]
+        return fieldTypeMap[fieldType]
     }
 
     const getFieldOptions = (fieldName: string, field: IFYORM.FieldOptions) => {
@@ -53,6 +61,8 @@ const transferForMysql = (model: IFYORM.Model, change: IFYORM.Change) => {
             return `${fieldName}${getFieldType(field.type)}${_(field.autoNowAdd, ` DEFAULT CURRENT_TIMESTAMP`)}${_(field.autoNow, ` DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`)}${optionsStr(fieldName, field)}`
         } else if (['Int', 'BigInt', 'Float', 'Decimal'].includes(field.type)) {
             return `${fieldName}${getFieldType(field.type)}${_(field.type === 'Decimal', `(${field.precision},${field.scale})`)}${optionsStr(fieldName, field)}`
+        } else if (['ForeignKey'].includes(field.type)) {
+            return `${fieldName}${getFieldType(field.type)}${optionsStr(fieldName, field)}`
         } else {
             return `${fieldName}${getFieldType(field.type)}${_(field.length, `(${field.length})`)}${optionsStr(fieldName, field)}`
         }
@@ -61,10 +71,10 @@ const transferForMysql = (model: IFYORM.Model, change: IFYORM.Change) => {
     switch (change.type) {
         case OPERATE_TYPE.INIT:
             sql = `CREATE TABLE IF NOT EXISTS ${model.name} (`
-            Object.keys(model.fields).forEach((fieldName, index) => {
-                const field: IFYORM.FieldOptions = model.fields[fieldName]
+            Object.keys(model.fields!).forEach((fieldName, index) => {
+                const field: IFYORM.FieldOptions = model.fields![fieldName]
                 sql += getFieldOptions(fieldName, field)
-                index < Object.keys(model.fields).length - 1 && (sql += ',')
+                index < Object.keys(model.fields!).length - 1 && (sql += ',')
             })
             sql += `)`
             break;
@@ -115,10 +125,10 @@ const transferForMysql = (model: IFYORM.Model, change: IFYORM.Change) => {
             break
         case OPERATE_TYPE.RENAME:
             if (!change.key) throw new Error(`${model.name} key is required`)
-            if (model.fields[change.key].type !== 'Decimal') {
-                sql = `ALTER TABLE ${model.name} CHANGE COLUMN ${change.oldKey} ${change.key}${getFieldType(model.fields[change.key].type)}${_(model.fields[change.key].length, `(${model.fields[change.key].length})`)};`
+            if (model.fields![change.key].type !== 'Decimal') {
+                sql = `ALTER TABLE ${model.name} CHANGE COLUMN ${change.oldKey} ${change.key}${getFieldType(model.fields![change.key].type)}${_(model.fields![change.key].length, `(${model.fields![change.key].length})`)};`
             } else {
-                sql = `ALTER TABLE ${model.name} CHANGE COLUMN ${change.oldKey} ${change.key} DECIMAL(${model.fields[change.key].precision},${model.fields[change.key].scale});`
+                sql = `ALTER TABLE ${model.name} CHANGE COLUMN ${change.oldKey} ${change.key} DECIMAL(${model.fields![change.key].precision},${model.fields![change.key].scale});`
             }
             break
         case OPERATE_TYPE.TABLENAME:
