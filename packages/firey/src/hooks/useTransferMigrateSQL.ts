@@ -9,7 +9,7 @@ const capitalizeFirstLetter = (str: string): string => str.charAt(0).toUpperCase
 
 const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: IFYORM.Change) => {
     let sql = ""
-    const relationSql = []
+    let relationSql = ""
 
     const getDefaultValue = (field: IFYORM.FieldOptions) => {
         if (field.defaultValue === undefined) return ''
@@ -28,7 +28,7 @@ const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: I
 
         if (['ForeignKey', 'OneToOne'].includes(field.type)) {
             const relationModel = models[field.model]
-            relationSql.push(`ALTER TABLE ${model.name} ADD CONSTRAINT fk_${fieldName}_${relationModel.name} FOREIGN KEY (${relationModel.name}_id) REFERENCES ${relationModel.name}(id);`)
+            relationSql += `ALTER TABLE ${model.name} ADD CONSTRAINT fk_${fieldName}_${relationModel.name} FOREIGN KEY (${relationModel.name}_id) REFERENCES ${relationModel.name}(id);`
         }
 
         return `${_(field.primaryKey, ' PRIMARY KEY')}${_(field.nullable, ' NULL')}${getDefaultValue(field)}${_(field.COMMENT, ` COMMENT '${field.COMMENT}'`)}` + createIndex + createUnique
@@ -136,16 +136,16 @@ const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: I
             break
     }
 
-    return sql
+    return {sql, relationSql}
 }
 
 const installFunc: Record<string, any> = {
     transferForMysql
 }
 
-export const useTransferMigrateSQL = (model: IFYORM.Model, change: IFYORM.Change): string => {
+export const useTransferMigrateSQL = (models: IFYORM.Model[], model: IFYORM.Model, change: IFYORM.Change): string => {
     const dbType = useConfig('database')[model.database || 'default'].type
     if (!dbType) throw new Error('Database type is undefined! Please set database type in defineConfig database.')
 
-    return Reflect.apply(installFunc[`transferFor${capitalizeFirstLetter(dbType)}`], null, [model, change])
+    return Reflect.apply(installFunc[`transferFor${capitalizeFirstLetter(dbType)}`], null, [models, model, change])
 }

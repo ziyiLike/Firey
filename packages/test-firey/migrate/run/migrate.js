@@ -36,8 +36,9 @@ for (const migration of preMigrations) {
     try {
         for (const change of migration.changes.filter(change => !change.isMigrate)) {
             const {execute} = await getCacheConnect(change.database || 'default')
-            const sql = useTransferMigrateSQL(migration.models, migration.models[change.model], change)
+            const {sql, relationSql} = useTransferMigrateSQL(migration.models, migration.models[change.model], change)
             await execute(sql)
+            await execute(relationSql)
             change.isMigrate = true
             console.log(`- ${change.model}${change.key ? `.${change.key}` : ''} [${change.type}] OK`)
         }
