@@ -28,7 +28,7 @@ const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: I
 
         if (['ForeignKey', 'OneToOne'].includes(field.type)) {
             const relationModel = models[field.model]
-            relationSql += `ALTER TABLE ${model.name} ADD CONSTRAINT fk_${fieldName}_${relationModel.name} FOREIGN KEY (${relationModel.name}_id) REFERENCES ${relationModel.name}(id);`
+            relationSql += `ALTER TABLE ${model.name} ADD CONSTRAINT fk_${fieldName}_${relationModel.name} FOREIGN KEY (${relationModel.name}_id) REFERENCES ${relationModel.name}(id)${_(field.onDelete, ` ON DELETE ${field.onDelete.toUpperCase()}`)};`
         }
 
         return `${_(field.primaryKey, ' PRIMARY KEY')}${_(field.nullable, ' NULL')}${getDefaultValue(field)}${_(field.COMMENT, ` COMMENT '${field.COMMENT}'`)}` + createIndex + createUnique
@@ -81,7 +81,7 @@ const transferForMysql = (models: IFYORM.Model[], model: IFYORM.Model, change: I
 
         case OPERATE_TYPE.ADD:
             if (!change.key) throw new Error(`${model.name} key is required`)
-            sql = `ALTER TABLE ${model.name} ADD COLUMN ${change.key} ${getFieldOptions(change.key, change.field)}`
+            sql = `ALTER TABLE ${model.name} ADD COLUMN ${getFieldOptions(change.key, change.field)}`
             break;
         case OPERATE_TYPE.REMOVE:
             if (!change.key) throw new Error(`${model.name} key is required`)

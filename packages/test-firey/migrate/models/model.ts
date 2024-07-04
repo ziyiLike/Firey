@@ -11,7 +11,7 @@ export const UserModel = defineModel({
         password1: Field.String(20),
         createdAt: Field.DateTime({autoNowAdd: true}),
         updatedAt: Field.DateTime({autoNow: true}),
-        test: Relation.ForeignKey("TestModel", {related: "users", onDelete: 'SetNull', nullable: true})
+        test: Relation.ForeignKey("TestModel", {related: "users", onDelete: 'SET NULL', nullable: true})
     }
 })
 

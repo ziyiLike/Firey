@@ -54,10 +54,10 @@ export namespace IFYORM {
         comment?: string
     } & T
     type OneToOneOptions = RelationOptions<{
-        onDelete?: 'Cascade' | 'SetNull' | 'SetDefault' | 'NoAction'
+        onDelete?: 'CASCADE' | 'SET NULL' | 'RESTRICT' | 'NO ACTION'
     }>
     type ForeignKeyOptions = RelationOptions<{
-        onDelete?: 'Cascade' | 'SetNull' | 'SetDefault' | 'NoAction'
+        onDelete?: 'CASCADE' | 'SET NULL' | 'RESTRICT' | 'NO ACTION'
     }>
     type ManyToManyOptions = RelationOptions<{
         through?: string

@@ -1,6 +1,6 @@
 {
     "date": "2024/7/2 09:29:21",
-    "isMigrate": false,
+  "isMigrate": true,
     "models": {
         "TestModel": {
             "name": "test",
@@ -67,9 +67,10 @@
                 "type": "ForeignKey",
                 "model": "TestModel",
                 "related": "users",
-                "onDelete": "SetNull",
+              "onDelete": "SET NULL",
                 "nullable": true
-            }
+            },
+          "isMigrate": true
         }
     ],
     "fileName": "migrate\\migrations\\migrations-4.json"
