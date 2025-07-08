@@ -4,7 +4,7 @@ A cross-era framework for Node Js Web services
 
 ## Docs
 
-- [中文文档](http://firey.ziyilike.com/)
+- [中文文档](https://firey.ziyilike.com/)
 
 ## Installation
 
